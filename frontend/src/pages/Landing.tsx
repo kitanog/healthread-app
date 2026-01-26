@@ -54,30 +54,34 @@ export default function Landing() {
     }
   };
 
-  const previewContent: Record<string, { title: string; description: string; features: string[]; url: string }> = {
+  const previewContent: Record<string, { title: string; description: string; features: string[]; url: string; iframeSrc: string }> = {
     dashboard: {
       title: 'Your Health at a Glance',
       description: 'The dashboard gives you an instant overview of your health journey. See trends in symptoms vs. positive effects, track your active medications, and get alerts when logged symptoms match known side effects.',
       features: ['Side effect alerts', 'Trend visualization', 'Quick actions', 'Activity timeline'],
-      url: 'app.healthread.com/dashboard'
+      url: 'app.healthread.com/dashboard',
+      iframeSrc: '/previews/01-dashboard-overview.html'
     },
     'log-entry': {
       title: 'Log Symptoms & Effects Easily',
       description: 'Quick entry forms let you log symptoms, positive effects, or medication doses in seconds. See known side effects for your medications right alongside your entry, and track patterns with similar past entries.',
       features: ['Quick symptom tags', 'Severity scale', 'Medication linking', 'Known effects panel'],
-      url: 'app.healthread.com/log'
+      url: 'app.healthread.com/log',
+      iframeSrc: '/previews/02-log-entry.html'
     },
     'ai-insights': {
       title: 'AI-Powered Health Insights',
       description: 'Get personalized health summaries and recommendations based on your logged data. Ask questions about your health history, upload medical records for AI analysis, and receive actionable insights about your medications and symptoms.',
       features: ['Weekly health summaries', 'Smart recommendations', 'Chat with your health data', 'Medical record analysis'],
-      url: 'app.healthread.com/ai-insights'
+      url: 'app.healthread.com/ai-insights',
+      iframeSrc: '/previews/04-ai-insights.html'
     },
     'share-report': {
       title: 'Share with Your Care Team',
       description: 'Generate professional health summaries to share with doctors. Reports include medication history, symptom patterns, positive effects, and automatically detected correlations between your meds and symptoms.',
       features: ['Secure sharing links', 'PDF export', 'Correlation detection', 'Customizable content'],
-      url: 'app.healthread.com/reports'
+      url: 'app.healthread.com/reports',
+      iframeSrc: '/previews/03-share-report.html'
     }
   };
 
@@ -306,6 +310,12 @@ export default function Landing() {
           display: flex;
           gap: 1rem;
           flex-wrap: wrap;
+        }
+
+        .hero-demo-note {
+          margin-top: 1rem;
+          font-size: 0.9rem;
+          color: var(--color-text-muted);
         }
 
         .btn-primary {
@@ -659,66 +669,49 @@ export default function Landing() {
           position: relative;
           overflow: hidden;
           background: linear-gradient(135deg, #F8F6F2 0%, #E8E4DC 100%);
-          min-height: 400px;
+          height: 600px;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 3rem;
         }
 
-        .screen-placeholder {
-          text-align: center;
-          max-width: 500px;
+        .screen-content iframe {
+          width: 1440px;
+          height: 900px;
+          border: none;
+          transform: scale(var(--iframe-scale, 0.75));
+          transform-origin: top center;
+          pointer-events: none;
         }
 
-        .screen-placeholder-icon {
-          width: 80px;
-          height: 80px;
-          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-          border-radius: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 1.5rem;
+        @media (min-width: 1400px) {
+          .screen-content iframe {
+            --iframe-scale: 0.85;
+          }
         }
 
-        .screen-placeholder-icon svg {
-          width: 40px;
-          height: 40px;
-          color: white;
+        @media (max-width: 1200px) {
+          .screen-content iframe {
+            --iframe-scale: 0.7;
+          }
         }
 
-        .screen-placeholder h4 {
-          font-family: var(--font-display);
-          font-size: 1.5rem;
-          margin-bottom: 0.75rem;
-          color: var(--color-text);
+        @media (max-width: 900px) {
+          .screen-content iframe {
+            --iframe-scale: 0.58;
+          }
+          .screen-content {
+            height: 500px;
+          }
         }
 
-        .screen-placeholder p {
-          color: var(--color-text-muted);
-          font-size: 0.95rem;
-          line-height: 1.6;
-          margin-bottom: 1.5rem;
-        }
-
-        .screen-placeholder .try-app-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: var(--color-primary);
-          color: white;
-          padding: 0.75rem 1.5rem;
-          border-radius: var(--radius-sm);
-          font-weight: 600;
-          font-size: 0.9rem;
-          text-decoration: none;
-          transition: all 0.2s ease;
-        }
-
-        .screen-placeholder .try-app-btn:hover {
-          background: var(--color-primary-light);
-          transform: translateY(-1px);
+        @media (max-width: 600px) {
+          .screen-content iframe {
+            --iframe-scale: 0.45;
+          }
+          .screen-content {
+            height: 400px;
+          }
         }
 
         .screen-description {
@@ -1233,7 +1226,8 @@ export default function Landing() {
         </ul>
         <div className="nav-auth">
           <Link to="/login" className="nav-login">Sign In</Link>
-          <Link to="/register" className="nav-cta">Try Beta</Link>
+          <Link to="/login" className="nav-login">Try Beta</Link>
+          <button onClick={() => scrollToSection('waitlist')} className="nav-cta">Join Waitlist</button>
         </div>
       </nav>
 
@@ -1248,14 +1242,15 @@ export default function Landing() {
           <h1>Your health journey, <em>threaded</em> together</h1>
           <p>Track symptoms, medications, and vitals over time. Share meaningful summaries with your healthcare providers. Finally understand how treatments affect your wellbeing.</p>
           <div className="hero-cta">
-            <Link to="/register" className="btn-primary">
-              Try Beta Free
+            <button onClick={() => scrollToSection('waitlist')} className="btn-primary">
+              Join the Waitlist
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </Link>
-            <button onClick={() => scrollToSection('preview')} className="btn-secondary">See Preview</button>
+            </button>
+            <Link to="/login" className="btn-secondary">Try Demo</Link>
           </div>
+          <p className="hero-demo-note">Try the demo to explore the app with sample data</p>
         </div>
         <div className="hero-visual">
           <div className="hero-mockup">
@@ -1432,42 +1427,10 @@ export default function Landing() {
               <div className="browser-url">{previewContent[activeTab].url}</div>
             </div>
             <div className="screen-content">
-              <div className="screen-placeholder">
-                <div className="screen-placeholder-icon">
-                  {activeTab === 'dashboard' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                  )}
-                  {activeTab === 'log-entry' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                  )}
-                  {activeTab === 'ai-insights' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/>
-                      <circle cx="12" cy="14" r="2"/>
-                    </svg>
-                  )}
-                  {activeTab === 'share-report' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                    </svg>
-                  )}
-                </div>
-                <h4>{previewContent[activeTab].title}</h4>
-                <p>{previewContent[activeTab].description}</p>
-                <Link to="/register" className="try-app-btn">
-                  Try It Now
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </Link>
-              </div>
+              <iframe
+                src={previewContent[activeTab].iframeSrc}
+                title={`${previewContent[activeTab].title} Preview`}
+              />
             </div>
           </div>
 
