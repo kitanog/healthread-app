@@ -103,6 +103,12 @@ export default function Login() {
               Create one
             </Link>
           </div>
+
+          <div className="mt-4 text-center">
+            <Link to="/landing" className="text-sm text-gray-500 hover:text-primary-500 transition-colors">
+              ← Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>

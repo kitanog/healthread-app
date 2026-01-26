@@ -14,7 +14,7 @@ import {
 import clsx from 'clsx';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/log', icon: PlusCircle, label: 'Log Entry' },
   { to: '/medications', icon: Pill, label: 'Medications' },
   { to: '/reports', icon: FileText, label: 'Reports' },
@@ -28,7 +28,7 @@ export default function Layout() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/landing');
   };
 
   const closeMobileMenu = () => {
