@@ -1233,7 +1233,7 @@ export default function Landing() {
         </ul>
         <div className="nav-auth">
           <Link to="/login" className="nav-login">Sign In</Link>
-          <Link to="/register" className="nav-cta">Get Started</Link>
+          <Link to="/register" className="nav-cta">Try Beta</Link>
         </div>
       </nav>
 
@@ -1243,13 +1243,13 @@ export default function Landing() {
         <div className="hero-content">
           <span className="hero-badge">
             <span className="hero-badge-dot"></span>
-            Now Available
+            Beta Available
           </span>
           <h1>Your health journey, <em>threaded</em> together</h1>
           <p>Track symptoms, medications, and vitals over time. Share meaningful summaries with your healthcare providers. Finally understand how treatments affect your wellbeing.</p>
           <div className="hero-cta">
             <Link to="/register" className="btn-primary">
-              Get Started Free
+              Try Beta Free
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
@@ -1365,7 +1365,7 @@ export default function Landing() {
               </svg>
             </div>
             <h3>Privacy First</h3>
-            <p>Your health data stays yours. End-to-end encryption and HIPAA-compliant infrastructure.</p>
+            <p>Your health data stays yours. Secure encryption keeps your information private and protected.</p>
           </div>
         </div>
       </section>
