@@ -310,12 +310,7 @@ export default function Landing() {
           display: flex;
           gap: 1rem;
           flex-wrap: wrap;
-        }
-
-        .hero-demo-note {
-          margin-top: 1rem;
-          font-size: 0.9rem;
-          color: var(--color-text-muted);
+          align-items: center;
         }
 
         .btn-primary {
@@ -356,6 +351,23 @@ export default function Landing() {
         .btn-secondary:hover {
           border-color: var(--color-primary);
           color: var(--color-primary);
+        }
+
+        .btn-tertiary {
+          color: var(--color-primary);
+          padding: 1rem 1.5rem;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 0.95rem;
+          transition: all 0.2s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .btn-tertiary:hover {
+          color: var(--color-primary-light);
+          text-decoration: underline;
         }
 
         .hero-visual {
@@ -669,48 +681,69 @@ export default function Landing() {
           position: relative;
           overflow: hidden;
           background: linear-gradient(135deg, #F8F6F2 0%, #E8E4DC 100%);
-          height: 600px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          padding-bottom: 56%;
+          min-height: 400px;
         }
 
         .screen-content iframe {
-          width: 1440px;
-          height: 900px;
+          position: absolute;
+          top: 0;
+          left: 0;
           border: none;
+          width: 1600px;
+          height: 900px;
           transform: scale(var(--iframe-scale, 0.75));
-          transform-origin: top center;
+          transform-origin: top left;
           pointer-events: none;
         }
 
         @media (min-width: 1400px) {
-          .screen-content iframe {
+          .screen-content {
             --iframe-scale: 0.85;
+            padding-bottom: 48%;
           }
         }
 
-        @media (max-width: 1200px) {
-          .screen-content iframe {
+        @media (min-width: 1200px) and (max-width: 1399px) {
+          .screen-content {
             --iframe-scale: 0.7;
+            padding-bottom: 52%;
           }
         }
 
-        @media (max-width: 900px) {
-          .screen-content iframe {
+        @media (min-width: 1024px) and (max-width: 1199px) {
+          .screen-content {
             --iframe-scale: 0.58;
-          }
-          .screen-content {
-            height: 500px;
+            padding-bottom: 52%;
           }
         }
 
-        @media (max-width: 600px) {
-          .screen-content iframe {
-            --iframe-scale: 0.45;
-          }
+        @media (min-width: 769px) and (max-width: 1023px) {
           .screen-content {
-            height: 400px;
+            --iframe-scale: 0.45;
+            padding-bottom: 58%;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .screen-content {
+            padding-bottom: 0;
+            min-height: 500px;
+          }
+          .screen-content iframe {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            transform: none;
+          }
+          .screen-wrapper {
+            margin: 0 -0.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .screen-content {
+            min-height: 450px;
           }
         }
 
@@ -1226,7 +1259,7 @@ export default function Landing() {
         </ul>
         <div className="nav-auth">
           <Link to="/login" className="nav-login">Sign In</Link>
-          <Link to="/login" className="nav-login">Try Beta</Link>
+          <Link to="/register" className="nav-login">Try Beta</Link>
           <button onClick={() => scrollToSection('waitlist')} className="nav-cta">Join Waitlist</button>
         </div>
       </nav>
@@ -1248,9 +1281,9 @@ export default function Landing() {
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </button>
-            <Link to="/login" className="btn-secondary">Try Demo</Link>
+            <button onClick={() => scrollToSection('preview')} className="btn-secondary">See Preview</button>
+            <Link to="/login" className="btn-tertiary">Try Demo</Link>
           </div>
-          <p className="hero-demo-note">Try the demo to explore the app with sample data</p>
         </div>
         <div className="hero-visual">
           <div className="hero-mockup">
