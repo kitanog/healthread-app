@@ -694,7 +694,6 @@ export default function Landing() {
           height: 900px;
           transform: scale(var(--iframe-scale, 0.75));
           transform-origin: top left;
-          pointer-events: none;
         }
 
         @media (min-width: 1400px) {
