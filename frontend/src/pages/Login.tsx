@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Play } from 'lucide-react';
+
+// Demo user credentials for testing
+const DEMO_USER = {
+  email: 'test@healthread.app',
+  password: 'password123'
+};
 
 export default function Login() {
   const { login } = useAuth();
@@ -9,6 +15,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +28,19 @@ export default function Login() {
       setError(err.response?.data?.detail || 'Failed to login. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError('');
+    setIsDemoLoading(true);
+
+    try {
+      await login(DEMO_USER);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to login with demo account. Please try again.');
+    } finally {
+      setIsDemoLoading(false);
     }
   };
 
@@ -90,12 +110,35 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isDemoLoading}
               className="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white text-gray-500">or</span>
+            </div>
+          </div>
+
+          {/* Demo Login Button */}
+          <button
+            onClick={handleDemoLogin}
+            disabled={isLoading || isDemoLoading}
+            className="w-full flex items-center justify-center gap-2 bg-accent-100 text-accent-700 border-2 border-accent-300 py-3 rounded-lg font-semibold hover:bg-accent-200 hover:border-accent-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Play className="w-4 h-4" />
+            {isDemoLoading ? 'Logging in...' : 'Try Demo Account'}
+          </button>
+          <p className="mt-2 text-center text-xs text-gray-500">
+            Explore the app with sample data
+          </p>
 
           <div className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}
