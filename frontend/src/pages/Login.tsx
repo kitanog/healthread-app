@@ -49,7 +49,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <Link to="/landing" className="inline-flex items-center justify-center gap-3 mb-4 hover:opacity-80 transition-opacity">
             <svg className="w-10 h-10 text-primary-500" viewBox="0 0 36 36" fill="none">
               <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2" />
               <path
@@ -60,7 +60,7 @@ export default function Login() {
               />
             </svg>
             <span className="font-display text-3xl text-primary-500">Healthread</span>
-          </div>
+          </Link>
           <p className="text-gray-600">Welcome back! Sign in to continue.</p>
         </div>
 
