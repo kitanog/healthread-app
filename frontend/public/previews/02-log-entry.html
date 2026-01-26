@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthread - Log Entry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #F8F6F2;
+            --color-sidebar: #1A2F26;
+            --color-card: #FFFFFF;
+            --color-text: #1A1A1A;
+            --color-text-muted: #6B7280;
+            --color-text-light: #9CA3AF;
+            --color-primary: #2D5A4A;
+            --color-primary-light: #3D7A64;
+            --color-accent: #E8B86D;
+            --color-accent-soft: #FEF3E2;
+            --color-success: #059669;
+            --color-success-soft: #D1FAE5;
+            --color-warning: #D97706;
+            --color-warning-soft: #FEF3C7;
+            --color-danger: #DC2626;
+            --color-danger-soft: #FEE2E2;
+            --color-border: #E5E7EB;
+            --font-display: 'DM Serif Display', Georgia, serif;
+            --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--color-sidebar);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding: 0.5rem;
+        }
+
+        .logo-icon { width: 32px; height: 32px; }
+
+        .nav-section { margin-bottom: 2rem; }
+        .nav-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-item svg { width: 20px; height: 20px; }
+
+        .sidebar-footer { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .user-info { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; }
+        .user-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.9rem;
+        }
+        .user-details h4 { font-size: 0.9rem; font-weight: 600; }
+        .user-details span { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+        .main { flex: 1; margin-left: 260px; padding: 2rem; }
+
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 400; }
+        .breadcrumb {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;
+        }
+        .breadcrumb a { color: var(--color-primary); text-decoration: none; }
+
+        .log-container { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; }
+        .log-form-area { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .card { background: var(--color-card); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem; border-bottom: 1px solid var(--color-border);
+        }
+        .card-header h3 { font-size: 1rem; font-weight: 600; }
+        .card-body { padding: 1.25rem; }
+
+        .entry-type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        .entry-type-option { position: relative; }
+        .entry-type-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .entry-type-option label {
+            display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+            padding: 1.5rem 1rem; border: 2px solid var(--color-border);
+            border-radius: var(--radius-md); cursor: pointer; background: var(--color-bg);
+        }
+        .entry-type-option label:hover { border-color: var(--color-text-light); }
+        .entry-type-option.symptom input:checked + label { border-color: var(--color-danger); background: var(--color-danger-soft); }
+        .entry-type-option.positive input:checked + label { border-color: var(--color-success); background: var(--color-success-soft); }
+        .entry-type-option.medication input:checked + label { border-color: var(--color-primary); background: rgba(45, 90, 74, 0.08); }
+
+        .type-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .entry-type-option.symptom .type-icon { background: var(--color-danger-soft); color: var(--color-danger); }
+        .entry-type-option.positive .type-icon { background: var(--color-success-soft); color: var(--color-success); }
+        .entry-type-option.medication .type-icon { background: rgba(45, 90, 74, 0.1); color: var(--color-primary); }
+        .type-icon svg { width: 24px; height: 24px; }
+        .type-label { font-weight: 600; font-size: 0.9rem; }
+        .type-desc { font-size: 0.75rem; color: var(--color-text-muted); }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { display: block; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem 1rem;
+            border: 2px solid var(--color-border); border-radius: var(--radius-sm);
+            font-size: 0.95rem; font-family: var(--font-body); background: var(--color-bg);
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--color-primary); background: white;
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        .symptom-quick-select { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .symptom-tag {
+            padding: 0.5rem 1rem; background: var(--color-bg);
+            border: 1px solid var(--color-border); border-radius: 100px;
+            font-size: 0.8rem; cursor: pointer;
+        }
+        .symptom-tag:hover { border-color: var(--color-primary); background: white; }
+        .symptom-tag.selected { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+        .severity-scale { display: flex; justify-content: space-between; gap: 0.5rem; }
+        .severity-option { flex: 1; position: relative; }
+        .severity-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .severity-option label {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 0.75rem 0.5rem; border: 2px solid var(--color-border);
+            border-radius: var(--radius-sm); cursor: pointer; background: var(--color-bg);
+        }
+        .severity-option input:checked + label { border-color: var(--color-warning); background: var(--color-warning-soft); }
+        .severity-option:nth-child(4) input:checked + label,
+        .severity-option:nth-child(5) input:checked + label { border-color: var(--color-danger); background: var(--color-danger-soft); }
+        .severity-number { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .severity-label { font-size: 0.65rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .med-checkbox-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .med-checkbox {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem; background: var(--color-bg); border-radius: var(--radius-sm); cursor: pointer;
+        }
+        .med-checkbox input { width: 18px; height: 18px; accent-color: var(--color-primary); }
+        .med-checkbox-info { flex: 1; }
+        .med-checkbox-name { font-weight: 500; font-size: 0.9rem; }
+        .med-checkbox-dosage { font-size: 0.75rem; color: var(--color-text-muted); }
+
+        .form-actions {
+            display: flex; gap: 1rem; justify-content: flex-end;
+            padding-top: 1rem; border-top: 1px solid var(--color-border); margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem; border-radius: var(--radius-sm);
+            font-size: 0.9rem; font-weight: 600; font-family: var(--font-body);
+            cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; border: none;
+        }
+        .btn-primary { background: var(--color-primary); color: white; }
+        .btn-primary:hover { background: var(--color-primary-light); }
+        .btn-secondary { background: var(--color-card); color: var(--color-text); border: 1px solid var(--color-border); }
+        .btn svg { width: 18px; height: 18px; }
+
+        .info-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .known-effects {
+            background: var(--color-accent-soft); border: 1px solid var(--color-accent);
+            border-radius: var(--radius-md); padding: 1.25rem;
+        }
+        .known-effects h4 {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.9rem; margin-bottom: 1rem; color: #92400E;
+        }
+        .known-effects h4 svg { width: 18px; height: 18px; color: var(--color-warning); }
+
+        .effect-list { list-style: none; }
+        .effect-item {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            padding: 0.625rem 0; border-bottom: 1px solid rgba(232, 184, 109, 0.3);
+            font-size: 0.85rem; color: #78350F;
+        }
+        .effect-item:last-child { border-bottom: none; }
+        .effect-match {
+            font-size: 0.65rem; padding: 0.2rem 0.5rem;
+            background: var(--color-warning); color: white;
+            border-radius: 100px; font-weight: 600; flex-shrink: 0;
+        }
+        .effect-freq { font-size: 0.7rem; color: #92400E; margin-top: 0.25rem; }
+
+        .tips-card {
+            background: var(--color-card); border-radius: var(--radius-md);
+            padding: 1.25rem; box-shadow: var(--shadow-sm);
+        }
+        .tips-card h4 { font-size: 0.9rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tips-card h4 svg { width: 18px; height: 18px; color: var(--color-primary); }
+        .tips-list { list-style: none; }
+        .tips-list li {
+            padding: 0.5rem 0; padding-left: 1.25rem; position: relative;
+            font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;
+        }
+        .tips-list li::before {
+            content: ''; position: absolute; left: 0; top: 0.85rem;
+            width: 6px; height: 6px; background: var(--color-primary); border-radius: 50%;
+        }
+
+        .recent-similar {
+            background: var(--color-card); border-radius: var(--radius-md);
+            padding: 1.25rem; box-shadow: var(--shadow-sm);
+        }
+        .recent-similar h4 { font-size: 0.9rem; margin-bottom: 1rem; }
+        .similar-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.625rem 0; border-bottom: 1px solid var(--color-border);
+        }
+        .similar-item:last-child { border-bottom: none; }
+        .similar-info { font-size: 0.85rem; }
+        .similar-date { font-size: 0.75rem; color: var(--color-text-light); }
+        .similar-severity { display: flex; gap: 3px; }
+        .sev-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border); }
+        .sev-dot.filled { background: var(--color-warning); }
+
+        /* Mobile Header (hidden by default) */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--color-sidebar);
+            color: white;
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .mobile-header .logo {
+            margin-bottom: 0;
+            font-size: 1.25rem;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .log-container {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1002;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 76px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .log-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .info-panel {
+                order: 0;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .entry-type-selector {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .entry-type-option label {
+                flex-direction: row;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .type-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .type-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .severity-scale {
+                flex-wrap: wrap;
+            }
+
+            .severity-option {
+                flex: 1 1 calc(20% - 0.5rem);
+                min-width: 55px;
+            }
+
+            .severity-option label {
+                padding: 0.625rem 0.25rem;
+            }
+
+            .severity-number {
+                font-size: 1rem;
+            }
+
+            .severity-label {
+                font-size: 0.55rem;
+            }
+
+            .time-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .symptom-quick-select {
+                gap: 0.375rem;
+            }
+
+            .symptom-tag {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .known-effects {
+                padding: 1rem;
+            }
+
+            .effect-item {
+                font-size: 0.8rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .tips-card {
+                padding: 1rem;
+            }
+
+            .tips-list li {
+                font-size: 0.8rem;
+            }
+
+            .recent-similar {
+                padding: 1rem;
+            }
+
+            .similar-info {
+                font-size: 0.8rem;
+            }
+
+            .med-checkbox {
+                padding: 0.625rem;
+            }
+
+            .med-checkbox-name {
+                font-size: 0.85rem;
+            }
+
+            .med-checkbox-dosage {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 0.75rem;
+                padding-top: 72px;
+            }
+
+            .entry-type-option label {
+                padding: 0.875rem;
+            }
+
+            .type-label {
+                font-size: 0.85rem;
+            }
+
+            .type-desc {
+                font-size: 0.7rem;
+            }
+
+            .form-group label {
+                font-size: 0.8rem;
+            }
+
+            .form-group input, .form-group select, .form-group textarea {
+                font-size: 0.9rem;
+                padding: 0.625rem 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Healthread
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Healthread
+        </div>
+
+        <nav class="nav-section">
+            <div class="nav-label">Overview</div>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Trends
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-label">Tracking</div>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>
+                Medications
+            </a>
+            <a href="#" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Symptoms
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                Positive Effects
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-label">Share</div>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Reports
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">SM</div>
+                <div class="user-details">
+                    <h4>Sarah Mitchell</h4>
+                    <span>Patient</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a><span>→</span><span>Log Entry</span>
+            </div>
+            <h1>Log New Entry</h1>
+        </header>
+
+        <div class="log-container">
+            <div class="log-form-area">
+                <div class="card">
+                    <div class="card-header"><h3>What would you like to log?</h3></div>
+                    <div class="card-body">
+                        <div class="entry-type-selector">
+                            <div class="entry-type-option symptom">
+                                <input type="radio" name="entryType" id="type-symptom" checked>
+                                <label for="type-symptom">
+                                    <span class="type-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                    </span>
+                                    <span class="type-label">Symptom</span>
+                                    <span class="type-desc">Side effect or issue</span>
+                                </label>
+                            </div>
+                            <div class="entry-type-option positive">
+                                <input type="radio" name="entryType" id="type-positive">
+                                <label for="type-positive">
+                                    <span class="type-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                    </span>
+                                    <span class="type-label">Positive Effect</span>
+                                    <span class="type-desc">Improvement noticed</span>
+                                </label>
+                            </div>
+                            <div class="entry-type-option medication">
+                                <input type="radio" name="entryType" id="type-medication">
+                                <label for="type-medication">
+                                    <span class="type-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>
+                                    </span>
+                                    <span class="type-label">Medication</span>
+                                    <span class="type-desc">Dose taken</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Symptom Details</h3></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="symptom-name">What are you experiencing?</label>
+                            <input type="text" id="symptom-name" placeholder="Type or select below..." value="Mild nausea">
+                            <div class="symptom-quick-select">
+                                <span class="symptom-tag selected">Nausea</span>
+                                <span class="symptom-tag">Headache</span>
+                                <span class="symptom-tag">Fatigue</span>
+                                <span class="symptom-tag">Dizziness</span>
+                                <span class="symptom-tag">Insomnia</span>
+                                <span class="symptom-tag">Stomach pain</span>
+                                <span class="symptom-tag">+ Add custom</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Severity</label>
+                            <div class="severity-scale">
+                                <div class="severity-option">
+                                    <input type="radio" name="severity" id="sev-1">
+                                    <label for="sev-1"><span class="severity-number">1</span><span class="severity-label">Minimal</span></label>
+                                </div>
+                                <div class="severity-option">
+                                    <input type="radio" name="severity" id="sev-2" checked>
+                                    <label for="sev-2"><span class="severity-number">2</span><span class="severity-label">Mild</span></label>
+                                </div>
+                                <div class="severity-option">
+                                    <input type="radio" name="severity" id="sev-3">
+                                    <label for="sev-3"><span class="severity-number">3</span><span class="severity-label">Moderate</span></label>
+                                </div>
+                                <div class="severity-option">
+                                    <input type="radio" name="severity" id="sev-4">
+                                    <label for="sev-4"><span class="severity-number">4</span><span class="severity-label">Significant</span></label>
+                                </div>
+                                <div class="severity-option">
+                                    <input type="radio" name="severity" id="sev-5">
+                                    <label for="sev-5"><span class="severity-number">5</span><span class="severity-label">Severe</span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-row">
+                            <div class="form-group">
+                                <label for="entry-date">Date</label>
+                                <input type="date" id="entry-date" value="2026-01-11">
+                            </div>
+                            <div class="form-group">
+                                <label for="entry-time">Time</label>
+                                <input type="time" id="entry-time" value="07:45">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Additional Notes (optional)</label>
+                            <textarea id="notes" placeholder="Any context that might be helpful...">Occurred about 30 minutes after taking morning medication. Subsided after eating breakfast.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Associate with Medication</h3></div>
+                    <div class="card-body">
+                        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">Select any medications you think might be related to this symptom.</p>
+                        <div class="med-checkbox-list">
+                            <label class="med-checkbox">
+                                <input type="checkbox" checked>
+                                <div class="med-checkbox-info">
+                                    <div class="med-checkbox-name">Metformin</div>
+                                    <div class="med-checkbox-dosage">500mg · Twice daily</div>
+                                </div>
+                            </label>
+                            <label class="med-checkbox">
+                                <input type="checkbox">
+                                <div class="med-checkbox-info">
+                                    <div class="med-checkbox-name">Lisinopril</div>
+                                    <div class="med-checkbox-dosage">10mg · Once daily</div>
+                                </div>
+                            </label>
+                            <label class="med-checkbox">
+                                <input type="checkbox">
+                                <div class="med-checkbox-info">
+                                    <div class="med-checkbox-name">Vitamin D3</div>
+                                    <div class="med-checkbox-dosage">2000 IU · Once daily</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary">Cancel</button>
+                            <button class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Save Entry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="known-effects">
+                    <h4>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Known Effects for Metformin
+                    </h4>
+                    <ul class="effect-list">
+                        <li class="effect-item">
+                            <div>
+                                <strong>Nausea</strong> <span class="effect-match">MATCH</span>
+                                <div class="effect-freq">Reported by 10-25% of patients</div>
+                            </div>
+                        </li>
+                        <li class="effect-item">
+                            <div><strong>Diarrhea</strong><div class="effect-freq">Reported by 10-53% of patients</div></div>
+                        </li>
+                        <li class="effect-item">
+                            <div><strong>Stomach upset</strong><div class="effect-freq">Reported by 5-10% of patients</div></div>
+                        </li>
+                        <li class="effect-item">
+                            <div><strong>Decreased appetite</strong><div class="effect-freq">Reported by 5-10% of patients</div></div>
+                        </li>
+                        <li class="effect-item">
+                            <div><strong>Metallic taste</strong><div class="effect-freq">Reported by 1-5% of patients</div></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tips-card">
+                    <h4>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Logging Tips
+                    </h4>
+                    <ul class="tips-list">
+                        <li>Log entries as close to when they happen as possible for accuracy</li>
+                        <li>Include context like meals, activities, or stress levels in notes</li>
+                        <li>Track both symptoms AND improvements to see the full picture</li>
+                    </ul>
+                </div>
+
+                <div class="recent-similar">
+                    <h4>Recent Similar Entries</h4>
+                    <div class="similar-item">
+                        <div>
+                            <div class="similar-info">Mild nausea</div>
+                            <div class="similar-date">Jan 8, 2026 · 7:30 AM</div>
+                        </div>
+                        <div class="similar-severity">
+                            <span class="sev-dot filled"></span><span class="sev-dot filled"></span>
+                            <span class="sev-dot"></span><span class="sev-dot"></span><span class="sev-dot"></span>
+                        </div>
+                    </div>
+                    <div class="similar-item">
+                        <div>
+                            <div class="similar-info">Mild nausea</div>
+                            <div class="similar-date">Jan 5, 2026 · 8:15 AM</div>
+                        </div>
+                        <div class="similar-severity">
+                            <span class="sev-dot filled"></span><span class="sev-dot filled"></span>
+                            <span class="sev-dot filled"></span><span class="sev-dot"></span><span class="sev-dot"></span>
+                        </div>
+                    </div>
+                    <div class="similar-item">
+                        <div>
+                            <div class="similar-info">Moderate nausea</div>
+                            <div class="similar-date">Jan 2, 2026 · 7:45 AM</div>
+                        </div>
+                        <div class="similar-severity">
+                            <span class="sev-dot filled"></span><span class="sev-dot filled"></span>
+                            <span class="sev-dot filled"></span><span class="sev-dot"></span><span class="sev-dot"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
