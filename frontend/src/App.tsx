@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import LogEntry from './pages/LogEntry';
 import Medications from './pages/Medications';
+import FoodLog from './pages/FoodLog';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
@@ -96,6 +97,17 @@ function AppRoutes() {
         }
       >
         <Route index element={<Medications />} />
+      </Route>
+
+      <Route
+        path="/food"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<FoodLog />} />
       </Route>
 
       <Route

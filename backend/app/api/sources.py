@@ -14,15 +14,18 @@ from uuid import UUID
 
 from app.db.database import get_db
 from app.db.models import (
-    User, Medication, SideEffect, SymptomLog, 
-    PositiveEffect, HealthReport, AIInsight,
-    ReferenceMedication, ReferenceSymptom, ReferencePositiveEffect
+    User, Medication, SideEffect, SymptomLog,
+    PositiveEffect, HealthReport, AIInsight, FoodLog,
+    ReferenceMedication, ReferenceSymptom, ReferencePositiveEffect, ReferenceFood,
+    MealCategory
 )
 from app.schemas import (
     MedicationResponse, SideEffectResponse, SymptomLogResponse,
     PositiveEffectResponse, HealthReportResponse, AIInsightResponse,
     DashboardResponse, DashboardStats, TrendDataPoint,
-    ReferenceMedicationResponse, ReferenceSymptomResponse, ReferencePositiveEffectResponse
+    ReferenceMedicationResponse, ReferenceSymptomResponse, ReferencePositiveEffectResponse,
+    FoodLogResponse, ReferenceFoodResponse, DailyNutritionSummary, FoodReactionSummary,
+    MealCategory as MealCategorySchema
 )
 from app.auth import get_current_user
 
@@ -44,46 +47,60 @@ async def get_dashboard(
     now = datetime.utcnow()
     start_date = now - timedelta(days=days)
     prev_start = start_date - timedelta(days=days)
-    
+
     current_symptoms = db.query(SymptomLog).filter(
         SymptomLog.user_id == current_user.id,
         SymptomLog.timestamp >= start_date
     ).all()
-    
+
     current_positive = db.query(PositiveEffect).filter(
         PositiveEffect.user_id == current_user.id,
         PositiveEffect.timestamp >= start_date
     ).all()
-    
+
     prev_symptoms = db.query(SymptomLog).filter(
         SymptomLog.user_id == current_user.id,
         SymptomLog.timestamp >= prev_start,
         SymptomLog.timestamp < start_date
     ).count()
-    
+
     prev_positive = db.query(PositiveEffect).filter(
         PositiveEffect.user_id == current_user.id,
         PositiveEffect.timestamp >= prev_start,
         PositiveEffect.timestamp < start_date
     ).count()
-    
+
     symptoms_trend = calculate_trend(len(current_symptoms), prev_symptoms)
     positive_trend = calculate_trend(len(current_positive), prev_positive)
-    
+
     active_meds = db.query(Medication).filter(
         Medication.user_id == current_user.id,
         Medication.active == True
     ).all()
-    
+
+    # Food tracking data
+    today = now.date()
+    todays_foods = db.query(FoodLog).filter(
+        FoodLog.user_id == current_user.id,
+        func.date(FoodLog.timestamp) == today
+    ).all()
+
+    todays_calories = sum((f.calories or 0) * (f.servings or 1) for f in todays_foods)
+    foods_with_reactions = db.query(FoodLog).filter(
+        FoodLog.user_id == current_user.id,
+        FoodLog.timestamp >= start_date,
+        FoodLog.had_reaction == True
+    ).count()
+
     first_log = db.query(func.min(SymptomLog.timestamp)).filter(
         SymptomLog.user_id == current_user.id
     ).scalar()
     days_tracked = (now - first_log).days if first_log else 0
-    
+
     recent_activity = get_recent_activity(db, current_user.id, limit=10)
     trends = get_trend_data(db, current_user.id, days)
     alerts = get_side_effect_alerts(db, current_user.id, current_symptoms, active_meds)
-    
+
     return DashboardResponse(
         stats=DashboardStats(
             positive_effects_count=len(current_positive),
@@ -91,7 +108,10 @@ async def get_dashboard(
             symptoms_count=len(current_symptoms),
             symptoms_trend=symptoms_trend,
             active_medications=len(active_meds),
-            days_tracked=days_tracked
+            days_tracked=days_tracked,
+            todays_calories=todays_calories,
+            foods_logged_today=len(todays_foods),
+            foods_with_reactions=foods_with_reactions
         ),
         recent_activity=recent_activity,
         trends=trends,
@@ -504,6 +524,230 @@ async def get_shared_report(
         raise HTTPException(status_code=410, detail="Share link has expired")
     
     return report
+
+
+# ============================================================
+# FOOD LOG SOURCE
+# ============================================================
+
+@router.get("/foods", response_model=List[FoodLogResponse])
+async def get_food_logs(
+    days: int = Query(default=30, ge=1, le=365),
+    limit: int = Query(default=100, ge=1, le=500),
+    meal_category: Optional[str] = Query(default=None),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get food logs for the current user."""
+    start_date = datetime.utcnow() - timedelta(days=days)
+
+    query = db.query(FoodLog).filter(
+        FoodLog.user_id == current_user.id,
+        FoodLog.timestamp >= start_date
+    )
+
+    if meal_category:
+        query = query.filter(FoodLog.meal_category == meal_category)
+
+    foods = query.order_by(desc(FoodLog.timestamp)).limit(limit).all()
+
+    return foods
+
+
+@router.get("/foods/{food_id}", response_model=FoodLogResponse)
+async def get_food_log(
+    food_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get a specific food log entry."""
+    food = db.query(FoodLog).filter(
+        FoodLog.id == food_id,
+        FoodLog.user_id == current_user.id
+    ).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Food log not found")
+
+    return food
+
+
+@router.get("/foods/nutrition/daily", response_model=List[DailyNutritionSummary])
+async def get_daily_nutrition(
+    days: int = Query(default=7, ge=1, le=90),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get daily nutrition summaries for the user."""
+    end_date = datetime.utcnow().date()
+    start_date = end_date - timedelta(days=days)
+
+    summaries = []
+    current_date = start_date
+
+    while current_date <= end_date:
+        day_foods = db.query(FoodLog).filter(
+            FoodLog.user_id == current_user.id,
+            func.date(FoodLog.timestamp) == current_date
+        ).all()
+
+        total_calories = sum((f.calories or 0) * (f.servings or 1) for f in day_foods)
+        total_protein = sum((f.protein_g or 0) * (f.servings or 1) for f in day_foods)
+        total_carbs = sum((f.carbs_g or 0) * (f.servings or 1) for f in day_foods)
+        total_fat = sum((f.fat_g or 0) * (f.servings or 1) for f in day_foods)
+        total_fiber = sum((f.fiber_g or 0) * (f.servings or 1) for f in day_foods)
+        total_sugar = sum((f.sugar_g or 0) * (f.servings or 1) for f in day_foods)
+        total_sodium = sum((f.sodium_mg or 0) * (f.servings or 1) for f in day_foods)
+        reactions = sum(1 for f in day_foods if f.had_reaction)
+
+        summaries.append(DailyNutritionSummary(
+            date=current_date,
+            total_calories=int(total_calories),
+            total_protein_g=round(total_protein, 1),
+            total_carbs_g=round(total_carbs, 1),
+            total_fat_g=round(total_fat, 1),
+            total_fiber_g=round(total_fiber, 1),
+            total_sugar_g=round(total_sugar, 1),
+            total_sodium_mg=round(total_sodium, 1),
+            meals_count=len(day_foods),
+            foods_with_reactions=reactions
+        ))
+
+        current_date = current_date + timedelta(days=1)
+
+    return summaries
+
+
+@router.get("/foods/reactions/summary", response_model=List[FoodReactionSummary])
+async def get_food_reactions_summary(
+    days: int = Query(default=90, ge=1, le=365),
+    limit: int = Query(default=10, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get summary of foods that caused reactions, useful for identifying allergies."""
+    start_date = datetime.utcnow() - timedelta(days=days)
+
+    # Get all foods with reactions
+    reaction_foods = db.query(FoodLog).filter(
+        FoodLog.user_id == current_user.id,
+        FoodLog.timestamp >= start_date,
+        FoodLog.had_reaction == True
+    ).all()
+
+    # Group by food name
+    food_reactions = {}
+    for food in reaction_foods:
+        key = food.name_lower
+        if key not in food_reactions:
+            food_reactions[key] = {
+                "food_name": food.name,
+                "count": 0,
+                "total_severity": 0,
+                "last_reaction": food.timestamp,
+                "symptoms": []
+            }
+        food_reactions[key]["count"] += 1
+        food_reactions[key]["total_severity"] += food.reaction_severity or 3
+        if food.timestamp > food_reactions[key]["last_reaction"]:
+            food_reactions[key]["last_reaction"] = food.timestamp
+        # Get associated symptoms
+        for symptom in food.associated_symptoms:
+            if symptom.symptom_name not in food_reactions[key]["symptoms"]:
+                food_reactions[key]["symptoms"].append(symptom.symptom_name)
+
+    # Convert to list and sort by count
+    summaries = [
+        FoodReactionSummary(
+            food_name=data["food_name"],
+            reaction_count=data["count"],
+            avg_severity=round(data["total_severity"] / data["count"], 1),
+            last_reaction=data["last_reaction"],
+            common_symptoms=data["symptoms"][:5]
+        )
+        for data in food_reactions.values()
+    ]
+
+    summaries.sort(key=lambda x: x.reaction_count, reverse=True)
+    return summaries[:limit]
+
+
+@router.get("/foods/suggestions", response_model=List[str])
+async def get_food_suggestions(
+    q: str = Query(default="", min_length=0),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get food name suggestions for autocomplete."""
+    # Get user's previously logged foods
+    user_foods = db.query(FoodLog.name).filter(
+        FoodLog.user_id == current_user.id
+    ).distinct().all()
+    user_food_names = [f[0] for f in user_foods]
+
+    # Get reference foods
+    ref_foods = db.query(ReferenceFood.name).all()
+    ref_food_names = [f[0] for f in ref_foods]
+
+    # Combine and deduplicate
+    all_foods = list(set(ref_food_names + user_food_names))
+
+    if q:
+        q_lower = q.lower()
+        all_foods = [f for f in all_foods if q_lower in f.lower()]
+
+    return sorted(all_foods)[:20]
+
+
+@router.get("/reference/foods", response_model=List[ReferenceFoodResponse])
+async def get_reference_foods(
+    q: str = Query(default="", min_length=0),
+    category: Optional[str] = Query(default=None),
+    diet_tag: Optional[str] = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """Get reference foods for autocomplete with nutritional data."""
+    query = db.query(ReferenceFood)
+
+    if q:
+        query = query.filter(ReferenceFood.name_lower.contains(q.lower()))
+
+    if category:
+        query = query.filter(ReferenceFood.category == category)
+
+    if diet_tag:
+        query = query.filter(ReferenceFood.diet_tags.any(diet_tag))
+
+    return query.order_by(ReferenceFood.name).limit(limit).all()
+
+
+@router.get("/reference/foods/{food_id}", response_model=ReferenceFoodResponse)
+async def get_reference_food(
+    food_id: UUID,
+    db: Session = Depends(get_db)
+):
+    """Get a specific reference food by ID."""
+    food = db.query(ReferenceFood).filter(ReferenceFood.id == food_id).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Reference food not found")
+
+    return food
+
+
+@router.get("/reference/foods/by-barcode/{barcode}", response_model=ReferenceFoodResponse)
+async def get_reference_food_by_barcode(
+    barcode: str,
+    db: Session = Depends(get_db)
+):
+    """Get a reference food by barcode (for future QR scanning)."""
+    food = db.query(ReferenceFood).filter(ReferenceFood.barcode == barcode).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Food not found for this barcode")
+
+    return food
 
 
 # ============================================================

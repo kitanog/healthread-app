@@ -36,6 +36,29 @@ class InsightType(str, Enum):
     WARNING = "warning"
 
 
+class MealCategory(str, Enum):
+    BREAKFAST = "breakfast"
+    LUNCH = "lunch"
+    DINNER = "dinner"
+    SNACK = "snack"
+    BEVERAGE = "beverage"
+    SUPPLEMENT = "supplement"
+
+
+class DietType(str, Enum):
+    STANDARD = "standard"
+    KETO = "keto"
+    LOW_CARB = "low_carb"
+    VEGAN = "vegan"
+    VEGETARIAN = "vegetarian"
+    PALEO = "paleo"
+    MEDITERRANEAN = "mediterranean"
+    GLUTEN_FREE = "gluten_free"
+    DAIRY_FREE = "dairy_free"
+    LOW_SODIUM = "low_sodium"
+    DIABETIC_FRIENDLY = "diabetic_friendly"
+
+
 # ============================================================
 # USER SCHEMAS
 # ============================================================
@@ -123,6 +146,27 @@ class ReferencePositiveEffectResponse(BaseModel):
     name: str
     category: Optional[str] = None
     description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ReferenceFoodResponse(BaseModel):
+    id: UUID
+    name: str
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    serving_size: Optional[str] = None
+    calories: Optional[int] = None
+    protein_g: Optional[float] = None
+    carbs_g: Optional[float] = None
+    fat_g: Optional[float] = None
+    fiber_g: Optional[float] = None
+    sugar_g: Optional[float] = None
+    sodium_mg: Optional[float] = None
+    diet_tags: List[str] = []
+    allergens: List[str] = []
+    barcode: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -240,6 +284,106 @@ class PositiveEffectResponse(PositiveEffectBase):
 
 
 # ============================================================
+# FOOD LOG SCHEMAS
+# ============================================================
+
+class NutrientInfo(BaseModel):
+    """Nutritional information for a food item"""
+    calories: Optional[int] = None
+    protein_g: Optional[float] = None
+    carbs_g: Optional[float] = None
+    fat_g: Optional[float] = None
+    fiber_g: Optional[float] = None
+    sugar_g: Optional[float] = None
+    sodium_mg: Optional[float] = None
+
+
+class FoodLogBase(BaseModel):
+    name: str
+    brand: Optional[str] = None
+    meal_category: MealCategory = MealCategory.SNACK
+    serving_size: Optional[str] = None
+    servings: float = 1.0
+    calories: Optional[int] = None
+    protein_g: Optional[float] = None
+    carbs_g: Optional[float] = None
+    fat_g: Optional[float] = None
+    fiber_g: Optional[float] = None
+    sugar_g: Optional[float] = None
+    sodium_mg: Optional[float] = None
+    diet_tags: List[str] = []
+    allergens: List[str] = []
+    notes: Optional[str] = None
+    barcode: Optional[str] = None
+
+
+class FoodLogCreate(FoodLogBase):
+    timestamp: Optional[datetime] = None
+    associated_medication_ids: List[UUID] = []
+    had_reaction: bool = False
+    reaction_severity: Optional[int] = Field(default=None, ge=1, le=5)
+    reaction_notes: Optional[str] = None
+
+
+class FoodLogUpdate(BaseModel):
+    name: Optional[str] = None
+    brand: Optional[str] = None
+    meal_category: Optional[MealCategory] = None
+    serving_size: Optional[str] = None
+    servings: Optional[float] = None
+    calories: Optional[int] = None
+    protein_g: Optional[float] = None
+    carbs_g: Optional[float] = None
+    fat_g: Optional[float] = None
+    fiber_g: Optional[float] = None
+    sugar_g: Optional[float] = None
+    sodium_mg: Optional[float] = None
+    diet_tags: Optional[List[str]] = None
+    allergens: Optional[List[str]] = None
+    notes: Optional[str] = None
+    had_reaction: Optional[bool] = None
+    reaction_severity: Optional[int] = Field(default=None, ge=1, le=5)
+    reaction_notes: Optional[str] = None
+
+
+class FoodLogResponse(FoodLogBase):
+    id: UUID
+    user_id: UUID
+    timestamp: datetime
+    had_reaction: bool
+    reaction_severity: Optional[int] = None
+    reaction_notes: Optional[str] = None
+    created_at: datetime
+    associated_medications: List[MedicationResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class DailyNutritionSummary(BaseModel):
+    """Daily nutritional summary"""
+    date: date
+    total_calories: int
+    total_protein_g: float
+    total_carbs_g: float
+    total_fat_g: float
+    total_fiber_g: float
+    total_sugar_g: float
+    total_sodium_mg: float
+    meals_count: int
+    foods_with_reactions: int
+
+
+class FoodReactionSummary(BaseModel):
+    """Summary of foods that caused reactions"""
+    food_name: str
+    reaction_count: int
+    avg_severity: float
+    last_reaction: datetime
+    common_symptoms: List[str] = []
+
+
+# ============================================================
 # HEALTH REPORT SCHEMAS
 # ============================================================
 
@@ -313,6 +457,10 @@ class DashboardStats(BaseModel):
     symptoms_trend: float
     active_medications: int
     days_tracked: int
+    # Food tracking stats
+    todays_calories: int = 0
+    foods_logged_today: int = 0
+    foods_with_reactions: int = 0
 
 
 class TrendDataPoint(BaseModel):

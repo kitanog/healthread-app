@@ -10,6 +10,7 @@ import {
   User,
   Menu,
   X,
+  UtensilsCrossed,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -17,6 +18,7 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/log', icon: PlusCircle, label: 'Log Entry' },
   { to: '/medications', icon: Pill, label: 'Medications' },
+  { to: '/food', icon: UtensilsCrossed, label: 'Food' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/profile', icon: User, label: 'Profile' },
 ];
@@ -120,7 +122,7 @@ export default function Layout() {
 
           <div className="mb-6">
             <p className="text-xs uppercase tracking-wider text-white/40 px-3 mb-2">Tracking</p>
-            {navItems.slice(2, 3).map((item) => (
+            {navItems.slice(2, 4).map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -142,7 +144,7 @@ export default function Layout() {
 
           <div className="mb-6">
             <p className="text-xs uppercase tracking-wider text-white/40 px-3 mb-2">Share</p>
-            {navItems.slice(3, 4).map((item) => (
+            {navItems.slice(4, 5).map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -164,7 +166,7 @@ export default function Layout() {
 
           <div className="mb-6">
             <p className="text-xs uppercase tracking-wider text-white/40 px-3 mb-2">Account</p>
-            {navItems.slice(4).map((item) => (
+            {navItems.slice(5).map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -216,7 +218,7 @@ export default function Layout() {
       {/* Mobile Bottom Navigation (Quick Access) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30">
         <div className="flex justify-around items-center py-2">
-          {navItems.slice(0, 4).map((item) => (
+          {navItems.slice(0, 5).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

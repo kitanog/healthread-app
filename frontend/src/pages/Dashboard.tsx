@@ -10,6 +10,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
+  Flame,
+  UtensilsCrossed,
 } from 'lucide-react';
 import {
   LineChart,
@@ -70,7 +72,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
         <StatCard
           icon={Heart}
           iconColor="text-success-500"
@@ -91,11 +93,27 @@ export default function Dashboard() {
           invertTrend
         />
         <StatCard
+          icon={Flame}
+          iconColor="text-orange-500"
+          iconBg="bg-orange-100"
+          label="Today's Calories"
+          value={stats.todays_calories}
+          subtitle={`${stats.foods_logged_today} meals logged`}
+        />
+        <StatCard
           icon={Pill}
           iconColor="text-primary-500"
           iconBg="bg-primary-100"
           label="Active Meds"
           value={stats.active_medications}
+        />
+        <StatCard
+          icon={UtensilsCrossed}
+          iconColor="text-red-500"
+          iconBg="bg-red-100"
+          label="Food Reactions"
+          value={stats.foods_with_reactions}
+          subtitle="in last 14 days"
         />
         <StatCard
           icon={Calendar}
@@ -282,6 +300,7 @@ interface StatCardProps {
   trend?: number;
   trendLabel?: string;
   invertTrend?: boolean;
+  subtitle?: string;
 }
 
 function StatCard({
@@ -293,6 +312,7 @@ function StatCard({
   trend,
   trendLabel,
   invertTrend,
+  subtitle,
 }: StatCardProps) {
   const isPositive = invertTrend ? (trend ?? 0) < 0 : (trend ?? 0) > 0;
 
@@ -321,6 +341,7 @@ function StatCard({
       <p className="text-xl sm:text-2xl font-bold text-gray-900">{value}</p>
       <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">{label}</p>
       {trendLabel && <p className="text-[10px] sm:text-xs text-gray-400 mt-1 hidden sm:block">{trendLabel}</p>}
+      {subtitle && <p className="text-[10px] sm:text-xs text-gray-400 mt-1 hidden sm:block">{subtitle}</p>}
     </div>
   );
 }

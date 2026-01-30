@@ -19,6 +19,13 @@ import type {
   ReferenceMedication,
   ReferenceSymptom,
   ReferencePositiveEffect,
+  FoodLog,
+  FoodLogCreateRequest,
+  FoodLogUpdateRequest,
+  ReferenceFood,
+  DailyNutritionSummary,
+  FoodReactionSummary,
+  MealCategory,
 } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -180,6 +187,56 @@ export const sourcesApi = {
     const response = await api.get(`/sources/insights?${params}`);
     return response.data;
   },
+
+  // Food Logs
+  getFoodLogs: async (days: number = 30, limit: number = 100, mealCategory?: MealCategory): Promise<FoodLog[]> => {
+    const params = new URLSearchParams();
+    params.append('days', days.toString());
+    params.append('limit', limit.toString());
+    if (mealCategory) params.append('meal_category', mealCategory);
+    const response = await api.get(`/sources/foods?${params}`);
+    return response.data;
+  },
+
+  getFoodLog: async (id: string): Promise<FoodLog> => {
+    const response = await api.get(`/sources/foods/${id}`);
+    return response.data;
+  },
+
+  getDailyNutrition: async (days: number = 7): Promise<DailyNutritionSummary[]> => {
+    const response = await api.get(`/sources/foods/nutrition/daily?days=${days}`);
+    return response.data;
+  },
+
+  getFoodReactionsSummary: async (days: number = 90, limit: number = 10): Promise<FoodReactionSummary[]> => {
+    const response = await api.get(`/sources/foods/reactions/summary?days=${days}&limit=${limit}`);
+    return response.data;
+  },
+
+  getFoodSuggestions: async (query: string = ''): Promise<string[]> => {
+    const response = await api.get(`/sources/foods/suggestions?q=${query}`);
+    return response.data;
+  },
+
+  // Reference Foods
+  getReferenceFoods: async (query: string = '', category?: string, dietTag?: string): Promise<ReferenceFood[]> => {
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (category) params.append('category', category);
+    if (dietTag) params.append('diet_tag', dietTag);
+    const response = await api.get(`/sources/reference/foods?${params}`);
+    return response.data;
+  },
+
+  getReferenceFoodById: async (id: string): Promise<ReferenceFood> => {
+    const response = await api.get(`/sources/reference/foods/${id}`);
+    return response.data;
+  },
+
+  getReferenceFoodByBarcode: async (barcode: string): Promise<ReferenceFood> => {
+    const response = await api.get(`/sources/reference/foods/by-barcode/${barcode}`);
+    return response.data;
+  },
 };
 
 // ============================================================
@@ -248,6 +305,37 @@ export const actionsApi = {
   revokeShare: async (id: string): Promise<HealthReport> => {
     const response = await api.delete(`/actions/reports/${id}/share`);
     return response.data;
+  },
+
+  // Food Logs
+  logFood: async (data: FoodLogCreateRequest): Promise<FoodLog> => {
+    const response = await api.post('/actions/foods', data);
+    return response.data;
+  },
+
+  updateFoodLog: async (id: string, data: FoodLogUpdateRequest): Promise<FoodLog> => {
+    const response = await api.put(`/actions/foods/${id}`, data);
+    return response.data;
+  },
+
+  logFoodReaction: async (
+    id: string,
+    severity: number,
+    notes?: string,
+    symptomIds?: string[]
+  ): Promise<FoodLog> => {
+    const params = new URLSearchParams();
+    params.append('severity', severity.toString());
+    if (notes) params.append('notes', notes);
+    if (symptomIds && symptomIds.length > 0) {
+      symptomIds.forEach((sid) => params.append('symptom_ids', sid));
+    }
+    const response = await api.post(`/actions/foods/${id}/reaction?${params}`);
+    return response.data;
+  },
+
+  deleteFoodLog: async (id: string): Promise<void> => {
+    await api.delete(`/actions/foods/${id}`);
   },
 };
 
