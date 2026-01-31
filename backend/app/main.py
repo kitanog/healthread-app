@@ -11,18 +11,30 @@ from contextlib import asynccontextmanager
 from app.db.database import engine, Base
 from app.db.seed import seed_database
 from app.api import sources, actions, auth
+from sqlalchemy import inspect, text
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize database and seed data on startup."""
     # Create tables
+    print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
+
+    # Verify tables were created
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+    print(f"Tables found: {len(tables)}")
+    for t in tables:
+        print(f"  - {t}")
+
     # Seed reference data
     try:
         seed_database()
     except Exception as e:
         print(f"Error seeding database: {e}")
+        import traceback
+        traceback.print_exc()
     yield
 
 
@@ -67,3 +79,48 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+
+@app.get("/db-status")
+async def db_status():
+    """Check database status and list all tables."""
+    try:
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+
+        # Expected tables
+        expected = [
+            'users', 'medications', 'symptom_logs', 'positive_effects',
+            'food_logs', 'health_reports', 'ai_insights', 'provenance',
+            'reference_medications', 'side_effects', 'reference_symptoms',
+            'reference_positive_effects', 'reference_foods',
+            'symptom_medication_association', 'positive_effect_medication_association',
+            'food_medication_association', 'food_symptom_association'
+        ]
+
+        missing = [t for t in expected if t not in tables]
+        extra = [t for t in tables if t not in expected]
+
+        # Get row counts for key tables
+        counts = {}
+        with engine.connect() as conn:
+            for table in ['users', 'reference_medications', 'reference_foods', 'medications', 'food_logs']:
+                if table in tables:
+                    result = conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
+                    counts[table] = result.scalar()
+
+        return {
+            "status": "connected",
+            "tables_found": len(tables),
+            "tables": sorted(tables),
+            "missing_tables": missing,
+            "extra_tables": extra,
+            "row_counts": counts,
+            "healthy": len(missing) == 0
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "healthy": False
+        }
