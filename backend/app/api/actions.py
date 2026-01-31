@@ -5,7 +5,7 @@ Following Palantir Foundry pattern: Actions are the ONLY way to mutate state.
 Each action is validated, logged for provenance, and may trigger downstream computations.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
