@@ -59,6 +59,62 @@ export interface ReferencePositiveEffect {
   description?: string;
 }
 
+export interface ReferenceFood {
+  id: string;
+  name: string;
+  brand?: string;
+  category?: string;
+  serving_size?: string;
+  calories?: number;
+  protein_g?: number;
+  carbs_g?: number;
+  fat_g?: number;
+  fiber_g?: number;
+  sugar_g?: number;
+  sodium_mg?: number;
+  diet_tags: string[];
+  allergens: string[];
+  barcode?: string;
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+export type MealCategory = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'beverage' | 'supplement';
+
+export type DietType =
+  | 'standard'
+  | 'keto'
+  | 'low_carb'
+  | 'vegan'
+  | 'vegetarian'
+  | 'paleo'
+  | 'mediterranean'
+  | 'gluten_free'
+  | 'dairy_free'
+  | 'low_sodium'
+  | 'diabetic_friendly';
+
+// Common allergens
+export const COMMON_ALLERGENS = [
+  'dairy',
+  'eggs',
+  'fish',
+  'shellfish',
+  'tree_nuts',
+  'peanuts',
+  'wheat',
+  'gluten',
+  'soy',
+  'sesame',
+  'sulfites',
+  'corn',
+  'nightshades'
+] as const;
+
+export type Allergen = typeof COMMON_ALLERGENS[number];
+
 // ============================================================
 // CORE TYPES
 // ============================================================
@@ -111,6 +167,54 @@ export interface PositiveEffect {
   notes?: string;
   created_at: string;
   associated_medications: Medication[];
+}
+
+export interface FoodLog {
+  id: string;
+  user_id: string;
+  timestamp: string;
+  name: string;
+  brand?: string;
+  meal_category: MealCategory;
+  serving_size?: string;
+  servings: number;
+  calories?: number;
+  protein_g?: number;
+  carbs_g?: number;
+  fat_g?: number;
+  fiber_g?: number;
+  sugar_g?: number;
+  sodium_mg?: number;
+  diet_tags: string[];
+  allergens: string[];
+  had_reaction: boolean;
+  reaction_severity?: 1 | 2 | 3 | 4 | 5;
+  reaction_notes?: string;
+  notes?: string;
+  barcode?: string;
+  created_at: string;
+  associated_medications: Medication[];
+}
+
+export interface DailyNutritionSummary {
+  date: string;
+  total_calories: number;
+  total_protein_g: number;
+  total_carbs_g: number;
+  total_fat_g: number;
+  total_fiber_g: number;
+  total_sugar_g: number;
+  total_sodium_mg: number;
+  meals_count: number;
+  foods_with_reactions: number;
+}
+
+export interface FoodReactionSummary {
+  food_name: string;
+  reaction_count: number;
+  avg_severity: number;
+  last_reaction: string;
+  common_symptoms: string[];
 }
 
 export interface HealthReport {
@@ -186,6 +290,10 @@ export interface DashboardStats {
   symptoms_trend: number;
   active_medications: number;
   days_tracked: number;
+  // Food tracking stats
+  todays_calories: number;
+  foods_logged_today: number;
+  foods_with_reactions: number;
 }
 
 export interface TrendDataPoint {
@@ -266,6 +374,51 @@ export interface PositiveEffectCreateRequest {
   notes?: string;
   timestamp?: string;
   associated_medication_ids?: string[];
+}
+
+export interface FoodLogCreateRequest {
+  name: string;
+  brand?: string;
+  meal_category: MealCategory;
+  serving_size?: string;
+  servings?: number;
+  calories?: number;
+  protein_g?: number;
+  carbs_g?: number;
+  fat_g?: number;
+  fiber_g?: number;
+  sugar_g?: number;
+  sodium_mg?: number;
+  diet_tags?: string[];
+  allergens?: string[];
+  notes?: string;
+  barcode?: string;
+  timestamp?: string;
+  associated_medication_ids?: string[];
+  had_reaction?: boolean;
+  reaction_severity?: number;
+  reaction_notes?: string;
+}
+
+export interface FoodLogUpdateRequest {
+  name?: string;
+  brand?: string;
+  meal_category?: MealCategory;
+  serving_size?: string;
+  servings?: number;
+  calories?: number;
+  protein_g?: number;
+  carbs_g?: number;
+  fat_g?: number;
+  fiber_g?: number;
+  sugar_g?: number;
+  sodium_mg?: number;
+  diet_tags?: string[];
+  allergens?: string[];
+  notes?: string;
+  had_reaction?: boolean;
+  reaction_severity?: number;
+  reaction_notes?: string;
 }
 
 export interface ReportCreateRequest {

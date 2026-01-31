@@ -43,6 +43,29 @@ class InsightType(str, enum.Enum):
     WARNING = "warning"
 
 
+class MealCategory(str, enum.Enum):
+    BREAKFAST = "breakfast"
+    LUNCH = "lunch"
+    DINNER = "dinner"
+    SNACK = "snack"
+    BEVERAGE = "beverage"
+    SUPPLEMENT = "supplement"
+
+
+class DietType(str, enum.Enum):
+    STANDARD = "standard"
+    KETO = "keto"
+    LOW_CARB = "low_carb"
+    VEGAN = "vegan"
+    VEGETARIAN = "vegetarian"
+    PALEO = "paleo"
+    MEDITERRANEAN = "mediterranean"
+    GLUTEN_FREE = "gluten_free"
+    DAIRY_FREE = "dairy_free"
+    LOW_SODIUM = "low_sodium"
+    DIABETIC_FRIENDLY = "diabetic_friendly"
+
+
 # ============================================================
 # ASSOCIATION TABLES
 # ============================================================
@@ -59,6 +82,21 @@ positive_effect_medication_association = Table(
     Base.metadata,
     Column('positive_effect_id', UUID(as_uuid=True), ForeignKey('positive_effects.id')),
     Column('medication_id', UUID(as_uuid=True), ForeignKey('medications.id'))
+)
+
+# Food-related associations
+food_medication_association = Table(
+    'food_medication_association',
+    Base.metadata,
+    Column('food_log_id', UUID(as_uuid=True), ForeignKey('food_logs.id')),
+    Column('medication_id', UUID(as_uuid=True), ForeignKey('medications.id'))
+)
+
+food_symptom_association = Table(
+    'food_symptom_association',
+    Base.metadata,
+    Column('food_log_id', UUID(as_uuid=True), ForeignKey('food_logs.id')),
+    Column('symptom_log_id', UUID(as_uuid=True), ForeignKey('symptom_logs.id'))
 )
 
 
@@ -142,6 +180,42 @@ class ReferencePositiveEffect(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+class ReferenceFood(Base):
+    """
+    Reference food data - canonical list of foods for autocomplete.
+    Includes nutritional information and allergen data.
+    """
+    __tablename__ = "reference_foods"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(255), nullable=False, index=True)
+    name_lower = Column(String(255), nullable=False, index=True)
+    brand = Column(String(255), nullable=True)
+    category = Column(String(100), nullable=True)  # e.g., "protein", "vegetable", "grain"
+
+    # Nutritional info (per serving)
+    serving_size = Column(String(50), nullable=True)  # e.g., "100g", "1 cup"
+    calories = Column(Integer, nullable=True)
+    protein_g = Column(Float, nullable=True)
+    carbs_g = Column(Float, nullable=True)
+    fat_g = Column(Float, nullable=True)
+    fiber_g = Column(Float, nullable=True)
+    sugar_g = Column(Float, nullable=True)
+    sodium_mg = Column(Float, nullable=True)
+
+    # Diet compatibility
+    diet_tags = Column(ARRAY(String), default=[])  # ["keto", "vegan", "gluten_free"]
+
+    # Common allergens
+    allergens = Column(ARRAY(String), default=[])  # ["dairy", "gluten", "nuts", "soy", "eggs"]
+
+    # Barcode for future QR scanning
+    barcode = Column(String(50), nullable=True, index=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 # ============================================================
 # CORE ONTOLOGY OBJECTS
 # ============================================================
@@ -174,6 +248,7 @@ class User(Base):
     medications = relationship("Medication", back_populates="user", cascade="all, delete-orphan")
     symptom_logs = relationship("SymptomLog", back_populates="user", cascade="all, delete-orphan")
     positive_effects = relationship("PositiveEffect", back_populates="user", cascade="all, delete-orphan")
+    food_logs = relationship("FoodLog", back_populates="user", cascade="all, delete-orphan")
     health_reports = relationship("HealthReport", back_populates="user", cascade="all, delete-orphan")
     ai_insights = relationship("AIInsight", back_populates="user", cascade="all, delete-orphan")
 
@@ -260,20 +335,87 @@ class PositiveEffect(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    
+
     timestamp = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
     effect_name = Column(String(255), nullable=False, index=True)
     effect_name_lower = Column(String(255), nullable=False, index=True)
     notes = Column(Text, nullable=True)
-    
+
     created_at = Column(DateTime, default=datetime.utcnow)
-    
+
     # Relationships
     user = relationship("User", back_populates="positive_effects")
     associated_medications = relationship(
         "Medication",
         secondary=positive_effect_medication_association,
         back_populates="positive_effects"
+    )
+
+
+class FoodLog(Base):
+    """
+    FoodLog object - a logged food/meal entry.
+    Tracks nutritional intake, diet compatibility, and potential reactions.
+    """
+    __tablename__ = "food_logs"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    reference_food_id = Column(UUID(as_uuid=True), ForeignKey("reference_foods.id"), nullable=True)
+
+    timestamp = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    name = Column(String(255), nullable=False, index=True)
+    name_lower = Column(String(255), nullable=False, index=True)
+    brand = Column(String(255), nullable=True)
+    meal_category = Column(SQLEnum(MealCategory), nullable=False, default=MealCategory.SNACK)
+
+    # Nutritional info (for this specific entry)
+    serving_size = Column(String(50), nullable=True)
+    servings = Column(Float, default=1.0)  # Number of servings consumed
+    calories = Column(Integer, nullable=True)
+    protein_g = Column(Float, nullable=True)
+    carbs_g = Column(Float, nullable=True)
+    fat_g = Column(Float, nullable=True)
+    fiber_g = Column(Float, nullable=True)
+    sugar_g = Column(Float, nullable=True)
+    sodium_mg = Column(Float, nullable=True)
+
+    # Diet tracking
+    diet_tags = Column(ARRAY(String), default=[])  # Diet compatibility tags
+    allergens = Column(ARRAY(String), default=[])  # Known allergens in this food
+
+    # Reaction tracking (for identifying food sensitivities)
+    had_reaction = Column(Boolean, default=False)
+    reaction_severity = Column(Integer, nullable=True)  # 1-5, same as symptom severity
+    reaction_notes = Column(Text, nullable=True)
+
+    # General notes
+    notes = Column(Text, nullable=True)
+
+    # Barcode for future QR scanning
+    barcode = Column(String(50), nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="food_logs")
+    reference_food = relationship("ReferenceFood")
+    associated_medications = relationship(
+        "Medication",
+        secondary=food_medication_association,
+        backref="food_logs"
+    )
+    associated_symptoms = relationship(
+        "SymptomLog",
+        secondary=food_symptom_association,
+        backref="associated_foods"
+    )
+
+    # Indexes for efficient lookups
+    __table_args__ = (
+        Index('ix_food_logs_user_timestamp', 'user_id', 'timestamp'),
+        Index('ix_food_logs_meal_category', 'meal_category'),
     )
 
 

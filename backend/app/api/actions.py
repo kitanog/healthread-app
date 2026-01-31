@@ -16,16 +16,17 @@ import secrets
 
 from app.db.database import get_db
 from app.db.models import (
-    User, Medication, SideEffect, SymptomLog, 
+    User, Medication, SideEffect, SymptomLog,
     PositiveEffect, HealthReport, AIInsight, Provenance,
-    InsightType, ReferenceMedication
+    InsightType, ReferenceMedication, FoodLog, ReferenceFood
 )
 from app.schemas import (
     MedicationCreate, MedicationUpdate, MedicationResponse,
     SymptomLogCreate, SymptomLogResponse,
     PositiveEffectCreate, PositiveEffectResponse,
     HealthReportCreate, HealthReportResponse,
-    ShareReportRequest, UserProfileUpdate, UserResponse
+    ShareReportRequest, UserProfileUpdate, UserResponse,
+    FoodLogCreate, FoodLogUpdate, FoodLogResponse
 )
 from app.auth import get_current_user
 
@@ -418,10 +419,10 @@ async def delete_positive_effect(
         PositiveEffect.id == effect_id,
         PositiveEffect.user_id == current_user.id
     ).first()
-    
+
     if not effect:
         raise HTTPException(status_code=404, detail="Positive effect not found")
-    
+
     log_provenance(
         db=db,
         actor_id=current_user.id,
@@ -430,8 +431,218 @@ async def delete_positive_effect(
         inputs={"effect_id": str(effect_id)},
         outputs=[]
     )
-    
+
     db.delete(effect)
+    db.commit()
+
+
+# ============================================================
+# FOOD LOG ACTIONS
+# ============================================================
+
+@router.post("/foods", response_model=FoodLogResponse, status_code=status.HTTP_201_CREATED)
+async def log_food(
+    food_data: FoodLogCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    ACTION: LogFood
+    Creates a food log entry with nutritional tracking.
+    """
+    # Use provided timestamp or current time
+    timestamp = food_data.timestamp or datetime.utcnow()
+
+    # Try to find matching reference food for nutritional data
+    ref_food = db.query(ReferenceFood).filter(
+        ReferenceFood.name_lower == food_data.name.lower()
+    ).first()
+
+    # Create the food log entry
+    food = FoodLog(
+        id=uuid.uuid4(),
+        user_id=current_user.id,
+        reference_food_id=ref_food.id if ref_food else None,
+        timestamp=timestamp,
+        name=food_data.name,
+        name_lower=food_data.name.lower(),
+        brand=food_data.brand,
+        meal_category=food_data.meal_category,
+        serving_size=food_data.serving_size or (ref_food.serving_size if ref_food else None),
+        servings=food_data.servings,
+        # Use provided nutritional data or fall back to reference data
+        calories=food_data.calories if food_data.calories is not None else (ref_food.calories if ref_food else None),
+        protein_g=food_data.protein_g if food_data.protein_g is not None else (ref_food.protein_g if ref_food else None),
+        carbs_g=food_data.carbs_g if food_data.carbs_g is not None else (ref_food.carbs_g if ref_food else None),
+        fat_g=food_data.fat_g if food_data.fat_g is not None else (ref_food.fat_g if ref_food else None),
+        fiber_g=food_data.fiber_g if food_data.fiber_g is not None else (ref_food.fiber_g if ref_food else None),
+        sugar_g=food_data.sugar_g if food_data.sugar_g is not None else (ref_food.sugar_g if ref_food else None),
+        sodium_mg=food_data.sodium_mg if food_data.sodium_mg is not None else (ref_food.sodium_mg if ref_food else None),
+        diet_tags=food_data.diet_tags if food_data.diet_tags else (ref_food.diet_tags if ref_food else []),
+        allergens=food_data.allergens if food_data.allergens else (ref_food.allergens if ref_food else []),
+        had_reaction=food_data.had_reaction,
+        reaction_severity=food_data.reaction_severity,
+        reaction_notes=food_data.reaction_notes,
+        notes=food_data.notes,
+        barcode=food_data.barcode
+    )
+
+    # Link associated medications (e.g., supplements taken with meal)
+    if food_data.associated_medication_ids:
+        medications = db.query(Medication).filter(
+            Medication.id.in_(food_data.associated_medication_ids),
+            Medication.user_id == current_user.id
+        ).all()
+        food.associated_medications = medications
+
+    db.add(food)
+
+    log_provenance(
+        db=db,
+        actor_id=current_user.id,
+        actor_type="user",
+        action_type="LOG_FOOD",
+        inputs={
+            "name": food_data.name,
+            "meal_category": food_data.meal_category.value,
+            "calories": food_data.calories,
+            "timestamp": timestamp.isoformat(),
+            "had_reaction": food_data.had_reaction
+        },
+        outputs=[food.id]
+    )
+
+    db.commit()
+    db.refresh(food)
+
+    return food
+
+
+@router.put("/foods/{food_id}", response_model=FoodLogResponse)
+async def update_food_log(
+    food_id: UUID,
+    update_data: FoodLogUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    ACTION: UpdateFoodLog
+    Updates an existing food log entry.
+    """
+    food = db.query(FoodLog).filter(
+        FoodLog.id == food_id,
+        FoodLog.user_id == current_user.id
+    ).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Food log not found")
+
+    update_dict = update_data.model_dump(exclude_unset=True)
+
+    # Update name_lower if name is updated
+    if "name" in update_dict:
+        update_dict["name_lower"] = update_dict["name"].lower()
+
+    for field, value in update_dict.items():
+        setattr(food, field, value)
+
+    log_provenance(
+        db=db,
+        actor_id=current_user.id,
+        actor_type="user",
+        action_type="UPDATE_FOOD_LOG",
+        inputs={"food_id": str(food_id), "updates": {k: str(v) if v else None for k, v in update_dict.items()}},
+        outputs=[food.id]
+    )
+
+    db.commit()
+    db.refresh(food)
+
+    return food
+
+
+@router.post("/foods/{food_id}/reaction", response_model=FoodLogResponse)
+async def log_food_reaction(
+    food_id: UUID,
+    severity: int = Query(ge=1, le=5),
+    notes: Optional[str] = None,
+    symptom_ids: List[UUID] = [],
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    ACTION: LogFoodReaction
+    Records a reaction to a previously logged food item.
+    Useful for tracking potential food allergies or sensitivities.
+    """
+    food = db.query(FoodLog).filter(
+        FoodLog.id == food_id,
+        FoodLog.user_id == current_user.id
+    ).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Food log not found")
+
+    food.had_reaction = True
+    food.reaction_severity = severity
+    food.reaction_notes = notes
+
+    # Link associated symptoms
+    if symptom_ids:
+        symptoms = db.query(SymptomLog).filter(
+            SymptomLog.id.in_(symptom_ids),
+            SymptomLog.user_id == current_user.id
+        ).all()
+        food.associated_symptoms = symptoms
+
+    log_provenance(
+        db=db,
+        actor_id=current_user.id,
+        actor_type="user",
+        action_type="LOG_FOOD_REACTION",
+        inputs={
+            "food_id": str(food_id),
+            "food_name": food.name,
+            "severity": severity,
+            "symptom_ids": [str(s) for s in symptom_ids]
+        },
+        outputs=[food.id]
+    )
+
+    db.commit()
+    db.refresh(food)
+
+    return food
+
+
+@router.delete("/foods/{food_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_food_log(
+    food_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    ACTION: DeleteFoodLog
+    Removes a food log entry.
+    """
+    food = db.query(FoodLog).filter(
+        FoodLog.id == food_id,
+        FoodLog.user_id == current_user.id
+    ).first()
+
+    if not food:
+        raise HTTPException(status_code=404, detail="Food log not found")
+
+    log_provenance(
+        db=db,
+        actor_id=current_user.id,
+        actor_type="user",
+        action_type="DELETE_FOOD_LOG",
+        inputs={"food_id": str(food_id), "food_name": food.name},
+        outputs=[]
+    )
+
+    db.delete(food)
     db.commit()
 
 

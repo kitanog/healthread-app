@@ -6,8 +6,8 @@ Includes common medications, side effects, symptoms, and positive effects.
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
 from app.db.models import (
-    ReferenceMedication, SideEffect, ReferenceSymptom, 
-    ReferencePositiveEffect, FrequencyCategory, User
+    ReferenceMedication, SideEffect, ReferenceSymptom,
+    ReferencePositiveEffect, ReferenceFood, FrequencyCategory, User
 )
 from app.auth import get_password_hash
 import uuid
@@ -284,6 +284,458 @@ COMMON_POSITIVE_EFFECTS = [
     {"name": "Improved vision", "category": "vision"},
 ]
 
+# Common foods with nutritional data for autocomplete
+# Source: USDA FoodData Central
+COMMON_FOODS = [
+    # Proteins
+    {
+        "name": "Chicken Breast (grilled)",
+        "category": "protein",
+        "serving_size": "100g",
+        "calories": 165,
+        "protein_g": 31.0,
+        "carbs_g": 0.0,
+        "fat_g": 3.6,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 74.0,
+        "diet_tags": ["keto", "low_carb", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Salmon (baked)",
+        "category": "protein",
+        "serving_size": "100g",
+        "calories": 208,
+        "protein_g": 20.0,
+        "carbs_g": 0.0,
+        "fat_g": 13.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 59.0,
+        "diet_tags": ["keto", "low_carb", "paleo", "mediterranean", "gluten_free", "dairy_free"],
+        "allergens": ["fish"]
+    },
+    {
+        "name": "Eggs (scrambled)",
+        "category": "protein",
+        "serving_size": "2 large",
+        "calories": 182,
+        "protein_g": 12.0,
+        "carbs_g": 2.0,
+        "fat_g": 14.0,
+        "fiber_g": 0.0,
+        "sugar_g": 1.0,
+        "sodium_mg": 342.0,
+        "diet_tags": ["keto", "low_carb", "vegetarian", "gluten_free"],
+        "allergens": ["eggs", "dairy"]
+    },
+    {
+        "name": "Ground Beef (lean)",
+        "category": "protein",
+        "serving_size": "100g",
+        "calories": 250,
+        "protein_g": 26.0,
+        "carbs_g": 0.0,
+        "fat_g": 15.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 75.0,
+        "diet_tags": ["keto", "low_carb", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Tofu",
+        "category": "protein",
+        "serving_size": "100g",
+        "calories": 76,
+        "protein_g": 8.0,
+        "carbs_g": 1.9,
+        "fat_g": 4.8,
+        "fiber_g": 0.3,
+        "sugar_g": 0.6,
+        "sodium_mg": 7.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "low_carb"],
+        "allergens": ["soy"]
+    },
+    # Vegetables
+    {
+        "name": "Broccoli (steamed)",
+        "category": "vegetable",
+        "serving_size": "1 cup",
+        "calories": 55,
+        "protein_g": 3.7,
+        "carbs_g": 11.0,
+        "fat_g": 0.6,
+        "fiber_g": 5.0,
+        "sugar_g": 2.2,
+        "sodium_mg": 64.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Spinach (raw)",
+        "category": "vegetable",
+        "serving_size": "1 cup",
+        "calories": 7,
+        "protein_g": 0.9,
+        "carbs_g": 1.1,
+        "fat_g": 0.1,
+        "fiber_g": 0.7,
+        "sugar_g": 0.1,
+        "sodium_mg": 24.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Avocado",
+        "category": "vegetable",
+        "serving_size": "1 medium",
+        "calories": 240,
+        "protein_g": 3.0,
+        "carbs_g": 12.0,
+        "fat_g": 22.0,
+        "fiber_g": 10.0,
+        "sugar_g": 1.0,
+        "sodium_mg": 11.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Sweet Potato (baked)",
+        "category": "vegetable",
+        "serving_size": "1 medium",
+        "calories": 103,
+        "protein_g": 2.3,
+        "carbs_g": 24.0,
+        "fat_g": 0.1,
+        "fiber_g": 3.8,
+        "sugar_g": 7.0,
+        "sodium_mg": 41.0,
+        "diet_tags": ["vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    # Grains
+    {
+        "name": "Brown Rice (cooked)",
+        "category": "grain",
+        "serving_size": "1 cup",
+        "calories": 216,
+        "protein_g": 5.0,
+        "carbs_g": 45.0,
+        "fat_g": 1.8,
+        "fiber_g": 3.5,
+        "sugar_g": 0.7,
+        "sodium_mg": 10.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Oatmeal",
+        "category": "grain",
+        "serving_size": "1 cup cooked",
+        "calories": 158,
+        "protein_g": 6.0,
+        "carbs_g": 27.0,
+        "fat_g": 3.2,
+        "fiber_g": 4.0,
+        "sugar_g": 1.0,
+        "sodium_mg": 115.0,
+        "diet_tags": ["vegan", "vegetarian", "dairy_free"],
+        "allergens": ["gluten"]
+    },
+    {
+        "name": "Quinoa (cooked)",
+        "category": "grain",
+        "serving_size": "1 cup",
+        "calories": 222,
+        "protein_g": 8.0,
+        "carbs_g": 39.0,
+        "fat_g": 3.6,
+        "fiber_g": 5.0,
+        "sugar_g": 2.0,
+        "sodium_mg": 13.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Whole Wheat Bread",
+        "category": "grain",
+        "serving_size": "1 slice",
+        "calories": 81,
+        "protein_g": 4.0,
+        "carbs_g": 14.0,
+        "fat_g": 1.1,
+        "fiber_g": 2.0,
+        "sugar_g": 1.4,
+        "sodium_mg": 146.0,
+        "diet_tags": ["vegan", "vegetarian", "dairy_free"],
+        "allergens": ["gluten"]
+    },
+    # Dairy & Alternatives
+    {
+        "name": "Greek Yogurt (plain)",
+        "category": "dairy",
+        "serving_size": "1 cup",
+        "calories": 100,
+        "protein_g": 17.0,
+        "carbs_g": 6.0,
+        "fat_g": 0.7,
+        "fiber_g": 0.0,
+        "sugar_g": 5.0,
+        "sodium_mg": 65.0,
+        "diet_tags": ["vegetarian", "gluten_free", "low_carb"],
+        "allergens": ["dairy"]
+    },
+    {
+        "name": "Almond Milk (unsweetened)",
+        "category": "dairy_alternative",
+        "serving_size": "1 cup",
+        "calories": 30,
+        "protein_g": 1.0,
+        "carbs_g": 1.0,
+        "fat_g": 2.5,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 170.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": ["tree_nuts"]
+    },
+    {
+        "name": "Cottage Cheese",
+        "category": "dairy",
+        "serving_size": "1 cup",
+        "calories": 206,
+        "protein_g": 28.0,
+        "carbs_g": 6.0,
+        "fat_g": 9.0,
+        "fiber_g": 0.0,
+        "sugar_g": 6.0,
+        "sodium_mg": 918.0,
+        "diet_tags": ["vegetarian", "gluten_free", "keto", "low_carb"],
+        "allergens": ["dairy"]
+    },
+    # Fruits
+    {
+        "name": "Banana",
+        "category": "fruit",
+        "serving_size": "1 medium",
+        "calories": 105,
+        "protein_g": 1.3,
+        "carbs_g": 27.0,
+        "fat_g": 0.4,
+        "fiber_g": 3.0,
+        "sugar_g": 14.0,
+        "sodium_mg": 1.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Apple",
+        "category": "fruit",
+        "serving_size": "1 medium",
+        "calories": 95,
+        "protein_g": 0.5,
+        "carbs_g": 25.0,
+        "fat_g": 0.3,
+        "fiber_g": 4.4,
+        "sugar_g": 19.0,
+        "sodium_mg": 2.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Blueberries",
+        "category": "fruit",
+        "serving_size": "1 cup",
+        "calories": 84,
+        "protein_g": 1.1,
+        "carbs_g": 21.0,
+        "fat_g": 0.5,
+        "fiber_g": 3.6,
+        "sugar_g": 15.0,
+        "sodium_mg": 1.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    # Nuts & Seeds
+    {
+        "name": "Almonds",
+        "category": "nuts",
+        "serving_size": "1 oz (23 nuts)",
+        "calories": 164,
+        "protein_g": 6.0,
+        "carbs_g": 6.0,
+        "fat_g": 14.0,
+        "fiber_g": 3.5,
+        "sugar_g": 1.2,
+        "sodium_mg": 0.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": ["tree_nuts"]
+    },
+    {
+        "name": "Peanut Butter",
+        "category": "nuts",
+        "serving_size": "2 tbsp",
+        "calories": 188,
+        "protein_g": 8.0,
+        "carbs_g": 6.0,
+        "fat_g": 16.0,
+        "fiber_g": 2.0,
+        "sugar_g": 3.0,
+        "sodium_mg": 136.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": ["peanuts"]
+    },
+    # Common Allergen Foods
+    {
+        "name": "Shrimp (cooked)",
+        "category": "seafood",
+        "serving_size": "100g",
+        "calories": 99,
+        "protein_g": 24.0,
+        "carbs_g": 0.2,
+        "fat_g": 0.3,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 111.0,
+        "diet_tags": ["keto", "low_carb", "paleo", "gluten_free", "dairy_free"],
+        "allergens": ["shellfish"]
+    },
+    {
+        "name": "Milk (whole)",
+        "category": "dairy",
+        "serving_size": "1 cup",
+        "calories": 149,
+        "protein_g": 8.0,
+        "carbs_g": 12.0,
+        "fat_g": 8.0,
+        "fiber_g": 0.0,
+        "sugar_g": 12.0,
+        "sodium_mg": 105.0,
+        "diet_tags": ["vegetarian", "gluten_free"],
+        "allergens": ["dairy"]
+    },
+    # Supplements
+    {
+        "name": "Fish Oil Supplement",
+        "category": "supplement",
+        "serving_size": "1 softgel",
+        "calories": 10,
+        "protein_g": 0.0,
+        "carbs_g": 0.0,
+        "fat_g": 1.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 0.0,
+        "diet_tags": ["keto", "low_carb", "paleo", "gluten_free", "dairy_free"],
+        "allergens": ["fish"]
+    },
+    {
+        "name": "Multivitamin",
+        "category": "supplement",
+        "serving_size": "1 tablet",
+        "calories": 0,
+        "protein_g": 0.0,
+        "carbs_g": 0.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 0.0,
+        "diet_tags": ["vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Protein Powder (whey)",
+        "category": "supplement",
+        "serving_size": "1 scoop (30g)",
+        "calories": 120,
+        "protein_g": 24.0,
+        "carbs_g": 3.0,
+        "fat_g": 1.0,
+        "fiber_g": 0.0,
+        "sugar_g": 1.0,
+        "sodium_mg": 130.0,
+        "diet_tags": ["vegetarian", "gluten_free", "keto", "low_carb"],
+        "allergens": ["dairy"]
+    },
+    # Beverages
+    {
+        "name": "Coffee (black)",
+        "category": "beverage",
+        "serving_size": "8 oz",
+        "calories": 2,
+        "protein_g": 0.3,
+        "carbs_g": 0.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 5.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    {
+        "name": "Green Tea",
+        "category": "beverage",
+        "serving_size": "8 oz",
+        "calories": 2,
+        "protein_g": 0.0,
+        "carbs_g": 0.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0,
+        "sugar_g": 0.0,
+        "sodium_mg": 2.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "paleo", "gluten_free", "dairy_free"],
+        "allergens": []
+    },
+    # Common trigger foods for reactions
+    {
+        "name": "Peanuts",
+        "category": "nuts",
+        "serving_size": "1 oz",
+        "calories": 161,
+        "protein_g": 7.0,
+        "carbs_g": 5.0,
+        "fat_g": 14.0,
+        "fiber_g": 2.4,
+        "sugar_g": 1.3,
+        "sodium_mg": 5.0,
+        "diet_tags": ["keto", "low_carb", "vegan", "vegetarian", "gluten_free", "dairy_free"],
+        "allergens": ["peanuts"]
+    },
+    {
+        "name": "Soy Sauce",
+        "category": "condiment",
+        "serving_size": "1 tbsp",
+        "calories": 9,
+        "protein_g": 0.9,
+        "carbs_g": 0.8,
+        "fat_g": 0.0,
+        "fiber_g": 0.1,
+        "sugar_g": 0.1,
+        "sodium_mg": 879.0,
+        "diet_tags": ["vegan", "vegetarian", "dairy_free"],
+        "allergens": ["soy", "gluten"]
+    },
+]
+
+# Common food allergens for reference
+COMMON_ALLERGENS = [
+    "dairy",
+    "eggs",
+    "fish",
+    "shellfish",
+    "tree_nuts",
+    "peanuts",
+    "wheat",
+    "gluten",
+    "soy",
+    "sesame",
+    "sulfites",
+    "corn",
+    "nightshades"
+]
+
 
 def seed_database():
     """Seed the database with reference data."""
@@ -353,7 +805,29 @@ def seed_database():
             db.add(ref_effect)
         
         print(f"Seeded {len(COMMON_POSITIVE_EFFECTS)} reference positive effects")
-        
+
+        # Seed reference foods
+        for food in COMMON_FOODS:
+            ref_food = ReferenceFood(
+                id=uuid.uuid4(),
+                name=food["name"],
+                name_lower=food["name"].lower(),
+                category=food.get("category"),
+                serving_size=food.get("serving_size"),
+                calories=food.get("calories"),
+                protein_g=food.get("protein_g"),
+                carbs_g=food.get("carbs_g"),
+                fat_g=food.get("fat_g"),
+                fiber_g=food.get("fiber_g"),
+                sugar_g=food.get("sugar_g"),
+                sodium_mg=food.get("sodium_mg"),
+                diet_tags=food.get("diet_tags", []),
+                allergens=food.get("allergens", [])
+            )
+            db.add(ref_food)
+
+        print(f"Seeded {len(COMMON_FOODS)} reference foods")
+
         # Seed test user
         test_email = "test@healthread.app"
         user_exists = db.query(User).filter(User.email == test_email).first()
@@ -384,4 +858,4 @@ def seed_database():
 
 
 # Export for use in API
-__all__ = ['seed_database', 'COMMON_SYMPTOMS', 'COMMON_POSITIVE_EFFECTS', 'MEDICATIONS_SIDE_EFFECTS']
+__all__ = ['seed_database', 'COMMON_SYMPTOMS', 'COMMON_POSITIVE_EFFECTS', 'MEDICATIONS_SIDE_EFFECTS', 'COMMON_FOODS', 'COMMON_ALLERGENS']
