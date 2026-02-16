@@ -5,7 +5,7 @@ import { Mail, Lock, User, AlertCircle, Play } from 'lucide-react';
 
 // Demo user credentials for testing
 const DEMO_USER = {
-  email: 'test@healthread.app',
+  email: 'test@glp1companion.app',
   password: 'password123'
 };
 
@@ -72,9 +72,9 @@ export default function Register() {
                 strokeLinecap="round"
               />
             </svg>
-            <span className="font-display text-3xl text-primary-500">Healthread</span>
+            <span className="font-display text-3xl text-primary-500">GLP-1 Companion</span>
           </Link>
-          <p className="text-gray-600">Create your account to start tracking.</p>
+          <p className="text-gray-600">Create your account to optimize your GLP-1 journey.</p>
         </div>
 
         {/* Form */}

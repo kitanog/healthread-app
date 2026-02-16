@@ -7,30 +7,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Healthread brand colors
+        // GLP-1 Companion brand colors
         primary: {
-          50: '#f0f7f4',
-          100: '#d9ebe3',
-          200: '#b5d7c9',
-          300: '#88bda8',
-          400: '#5c9d84',
-          500: '#2D5A4A', // Main primary
-          600: '#2a5244',
-          700: '#254839',
-          800: '#1f3a2f',
-          900: '#1a2f26', // Sidebar
+          50: '#f0f4f8',
+          100: '#d9e2ec',
+          200: '#b5c7d9',
+          300: '#88a7c2',
+          400: '#5c87a8',
+          500: '#1E3A5F', // Main primary - deep medical blue
+          600: '#1b3556',
+          700: '#172e4a',
+          800: '#13263d',
+          900: '#0f1f33', // Sidebar
         },
         accent: {
-          50: '#fef9f0',
-          100: '#fef3e2',
-          200: '#fce5be',
-          300: '#f5d9a8',
-          400: '#E8B86D', // Main accent
-          500: '#d4a055',
-          600: '#b8863f',
-          700: '#996c33',
-          800: '#7a552a',
-          900: '#634523',
+          50: '#fef5ee',
+          100: '#fdeadb',
+          200: '#fbd4b5',
+          300: '#f5b888',
+          400: '#E87B35', // Main accent - energetic orange
+          500: '#d46a2a',
+          600: '#b85a22',
+          700: '#99491c',
+          800: '#7a3a16',
+          900: '#632f12',
         },
         success: {
           50: '#ecfdf5',
@@ -86,8 +86,8 @@ export default {
         body: ['Plus Jakarta Sans', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        'soft': '0 4px 24px rgba(45, 90, 74, 0.08)',
-        'medium': '0 8px 40px rgba(45, 90, 74, 0.12)',
+        'soft': '0 4px 24px rgba(30, 58, 95, 0.08)',
+        'medium': '0 8px 40px rgba(30, 58, 95, 0.12)',
       },
       borderRadius: {
         'sm': '8px',

@@ -37,9 +37,9 @@ export default function Reports() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Health Reports</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Progress Reports</h1>
           <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Generate and share reports with your healthcare providers
+            Generate and share reports with your prescribing provider
           </p>
         </div>
         <button
@@ -76,7 +76,7 @@ export default function Reports() {
           <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-700 mb-2">No reports yet</h3>
           <p className="text-gray-500 mb-6">
-            Generate your first health report to share with your doctor
+            Generate your first progress report to share with your provider
           </p>
           <button
             onClick={() => setShowCreateModal(true)}

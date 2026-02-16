@@ -56,31 +56,31 @@ export default function Landing() {
 
   const previewContent: Record<string, { title: string; description: string; features: string[]; url: string; iframeSrc: string }> = {
     dashboard: {
-      title: 'Your Health at a Glance',
-      description: 'The dashboard gives you an instant overview of your health journey. See trends in symptoms vs. positive effects, track your active medications, and get alerts when logged symptoms match known side effects.',
-      features: ['Side effect alerts', 'Trend visualization', 'Quick actions', 'Activity timeline'],
-      url: 'app.healthread.com/dashboard',
+      title: 'Your GLP-1 Journey at a Glance',
+      description: 'The dashboard gives you an instant overview of your GLP-1 progress. See trends in side effects vs. positive changes, track your medication schedule, and monitor nutrition goals.',
+      features: ['Side effect trends', 'Protein tracking', 'Progress metrics', 'Activity timeline'],
+      url: 'app.glp1companion.com/dashboard',
       iframeSrc: '/previews/01-dashboard-overview.html'
     },
     'log-entry': {
-      title: 'Log Symptoms & Effects Easily',
-      description: 'Quick entry forms let you log symptoms, positive effects, or medication doses in seconds. See known side effects for your medications right alongside your entry, and track patterns with similar past entries.',
-      features: ['Quick symptom tags', 'Severity scale', 'Medication linking', 'Known effects panel'],
-      url: 'app.healthread.com/log',
+      title: 'Log Side Effects & Progress Easily',
+      description: 'Quick entry forms let you log GLP-1 side effects, positive changes, or meals in seconds. See common side effects for your specific medication right alongside your entry.',
+      features: ['Common GLP-1 side effects', 'Severity scale', 'Medication linking', 'Injection tracking'],
+      url: 'app.glp1companion.com/log',
       iframeSrc: '/previews/02-log-entry.html'
     },
     'ai-insights': {
-      title: 'AI-Powered Health Insights',
-      description: 'Get personalized health summaries and recommendations based on your logged data. Ask questions about your health history, upload medical records for AI analysis, and receive actionable insights about your medications and symptoms.',
-      features: ['Weekly health summaries', 'Smart recommendations', 'Chat with your health data', 'Medical record analysis'],
-      url: 'app.healthread.com/ai-insights',
+      title: 'AI-Powered GLP-1 Insights',
+      description: 'Get personalized insights based on your GLP-1 journey data. Understand patterns in side effects relative to dose changes, get nutrition recommendations, and receive actionable tips for your titration schedule.',
+      features: ['Weekly progress summaries', 'Titration insights', 'Nutrition recommendations', 'Side effect patterns'],
+      url: 'app.glp1companion.com/ai-insights',
       iframeSrc: '/previews/04-ai-insights.html'
     },
     'share-report': {
-      title: 'Share with Your Care Team',
-      description: 'Generate professional health summaries to share with doctors. Reports include medication history, symptom patterns, positive effects, and automatically detected correlations between your meds and symptoms.',
-      features: ['Secure sharing links', 'PDF export', 'Correlation detection', 'Customizable content'],
-      url: 'app.healthread.com/reports',
+      title: 'Share with Your Prescriber',
+      description: 'Generate professional progress reports to share with your prescribing provider. Reports include GLP-1 dose history, side effect patterns, weight trends, and nutrition data.',
+      features: ['Secure sharing links', 'PDF export', 'Dose history', 'Progress metrics'],
+      url: 'app.glp1companion.com/reports',
       iframeSrc: '/previews/03-share-report.html'
     }
   };
@@ -93,19 +93,19 @@ export default function Landing() {
           --color-bg-warm: #F7F3EB;
           --color-text: #1A1A1A;
           --color-text-muted: #5C5C5C;
-          --color-primary: #2D5A4A;
-          --color-primary-light: #3D7A64;
-          --color-accent: #E8B86D;
-          --color-accent-light: #F5D9A8;
+          --color-primary: #1E3A5F;
+          --color-primary-light: #2B5080;
+          --color-accent: #E87B35;
+          --color-accent-light: #F5B888;
           --color-card: #FFFFFF;
           --color-border: #E5E0D5;
           --color-success: #059669;
           --color-success-soft: #D1FAE5;
           --font-display: 'DM Serif Display', Georgia, serif;
           --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
-          --shadow-soft: 0 4px 24px rgba(45, 90, 74, 0.08);
-          --shadow-medium: 0 8px 40px rgba(45, 90, 74, 0.12);
-          --shadow-large: 0 20px 60px rgba(45, 90, 74, 0.15);
+          --shadow-soft: 0 4px 24px rgba(30, 58, 95, 0.08);
+          --shadow-medium: 0 8px 40px rgba(30, 58, 95, 0.12);
+          --shadow-large: 0 20px 60px rgba(30, 58, 95, 0.15);
           --radius-sm: 8px;
           --radius-md: 16px;
           --radius-lg: 24px;
@@ -859,7 +859,7 @@ export default function Landing() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: radial-gradient(ellipse at 20% 50%, rgba(232, 184, 109, 0.15) 0%, transparent 50%),
+          background: radial-gradient(ellipse at 20% 50%, rgba(232, 123, 53, 0.15) 0%, transparent 50%),
                       radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
         }
 
@@ -998,7 +998,7 @@ export default function Landing() {
         .form-group select:focus {
           outline: none;
           border-color: var(--color-primary);
-          box-shadow: 0 0 0 3px rgba(45, 90, 74, 0.1);
+          box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
         }
 
         .form-group input::placeholder {
@@ -1040,7 +1040,7 @@ export default function Landing() {
 
         .role-option input:checked + label {
           border-color: var(--color-primary);
-          background: rgba(45, 90, 74, 0.05);
+          background: rgba(30, 58, 95, 0.05);
         }
 
         .role-option .role-icon {
@@ -1248,7 +1248,7 @@ export default function Landing() {
             <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2"/>
             <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          Healthread
+          GLP-1 Companion
         </a>
         <ul className="nav-links">
           <li><button onClick={() => scrollToSection('features')}>Features</button></li>
@@ -1269,10 +1269,10 @@ export default function Landing() {
         <div className="hero-content">
           <span className="hero-badge">
             <span className="hero-badge-dot"></span>
-            Beta Available
+            Now in Beta
           </span>
-          <h1>Your health journey, <em>threaded</em> together</h1>
-          <p>Track symptoms, medications, and vitals over time. Share meaningful summaries with your healthcare providers. Finally understand how treatments affect your wellbeing.</p>
+          <h1>Your GLP-1 journey, <em>optimized</em></h1>
+          <p>Track side effects, nutrition, and progress on Ozempic, Wegovy, Mounjaro, or Zepbound. Share reports with your prescribing provider. Finally understand how your GLP-1 is working.</p>
           <div className="hero-cta">
             <button onClick={() => scrollToSection('waitlist')} className="btn-primary">
               Join the Waitlist
@@ -1287,24 +1287,24 @@ export default function Landing() {
         <div className="hero-visual">
           <div className="hero-mockup">
             <div className="mockup-header">
-              <div className="mockup-avatar">JD</div>
+              <div className="mockup-avatar">SM</div>
               <div className="mockup-user-info">
-                <h4>Jane Doe</h4>
-                <span>Recovery tracking · Week 3</span>
+                <h4>Sarah M.</h4>
+                <span>Mounjaro · Week 8</span>
               </div>
             </div>
             <div className="mockup-stats">
               <div className="stat-card">
-                <span className="value">72</span>
-                <span className="label">Avg BPM</span>
+                <span className="value">127g</span>
+                <span className="label">Daily Protein</span>
               </div>
               <div className="stat-card">
-                <span className="value">3</span>
-                <span className="label">Active Meds</span>
+                <span className="value">1</span>
+                <span className="label">Active GLP-1</span>
               </div>
               <div className="stat-card">
-                <span className="value">↓ 40%</span>
-                <span className="label">Symptoms</span>
+                <span className="value">↓ 12 lbs</span>
+                <span className="label">Progress</span>
               </div>
             </div>
             <div className="mockup-chart">
@@ -1312,8 +1312,8 @@ export default function Landing() {
                 <svg viewBox="0 0 300 60" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#2D5A4A', stopOpacity: 0.3 }} />
-                      <stop offset="100%" style={{ stopColor: '#2D5A4A', stopOpacity: 0 }} />
+                      <stop offset="0%" style={{ stopColor: '#1E3A5F', stopOpacity: 0.3 }} />
+                      <stop offset="100%" style={{ stopColor: '#1E3A5F', stopOpacity: 0 }} />
                     </linearGradient>
                   </defs>
                   <path d="M0,45 Q30,50 60,40 T120,35 T180,25 T240,20 T300,15" />
@@ -1328,8 +1328,8 @@ export default function Landing() {
       <section className="features" id="features">
         <div className="section-header">
           <span className="section-label">Features</span>
-          <h2>Everything you need to understand your health</h2>
-          <p>A complete toolkit for tracking, analyzing, and communicating your health journey.</p>
+          <h2>Everything you need for your GLP-1 journey</h2>
+          <p>A complete companion for tracking side effects, optimizing nutrition, and communicating with your provider.</p>
         </div>
         <div className="features-grid">
           <div className="feature-card">
@@ -1338,8 +1338,8 @@ export default function Landing() {
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
               </svg>
             </div>
-            <h3>Symptom Tracking</h3>
-            <p>Log symptoms with severity ratings, duration, and notes. Track patterns over time with intuitive visualizations.</p>
+            <h3>Side Effect Tracking</h3>
+            <p>Log GLP-1 side effects like nausea, fatigue, and constipation with severity ratings. See patterns over your titration schedule.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1348,8 +1348,8 @@ export default function Landing() {
                 <path d="m8.5 8.5 7 7"/>
               </svg>
             </div>
-            <h3>Medication Management</h3>
-            <p>Track medications, dosages, and schedules. See known side effects and correlate them with your symptoms.</p>
+            <h3>GLP-1 Medication Tracking</h3>
+            <p>Track your Ozempic, Wegovy, Mounjaro, or Zepbound doses, titration schedule, and injection sites.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1357,8 +1357,8 @@ export default function Landing() {
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
             </div>
-            <h3>Side Effect Matching</h3>
-            <p>Automatically match your symptoms to known medication side effects. Know if what you're experiencing is expected.</p>
+            <h3>Protein & Nutrition Goals</h3>
+            <p>Track daily protein intake to prevent muscle loss. Log meals and monitor nutrition while your appetite changes on GLP-1s.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1370,8 +1370,8 @@ export default function Landing() {
                 <polyline points="10 9 9 9 8 9"/>
               </svg>
             </div>
-            <h3>Doctor Summaries</h3>
-            <p>Generate comprehensive health reports to share with your healthcare providers. No more forgetting symptoms at appointments.</p>
+            <h3>Provider Reports</h3>
+            <p>Generate progress reports to share with your prescribing provider. Show side effects, weight trends, and nutrition data at your next appointment.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1381,8 +1381,8 @@ export default function Landing() {
                 <line x1="6" y1="20" x2="6" y2="14"/>
               </svg>
             </div>
-            <h3>Trend Analysis</h3>
-            <p>Visualize correlations between medications and symptoms. Understand what's working and what isn't.</p>
+            <h3>Progress Tracking</h3>
+            <p>Visualize your GLP-1 journey over time. See how side effects change with dose adjustments and track what's working.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1392,7 +1392,7 @@ export default function Landing() {
               </svg>
             </div>
             <h3>Privacy First</h3>
-            <p>Your health data stays yours. Secure encryption keeps your information private and protected.</p>
+            <p>Your GLP-1 journey is personal. Secure encryption keeps your health data private and protected.</p>
           </div>
         </div>
       </section>
@@ -1402,8 +1402,8 @@ export default function Landing() {
         <div className="preview-container">
           <div className="section-header">
             <span className="section-label">Preview</span>
-            <h2>See Healthread in action</h2>
-            <p>Explore the dashboard, log entries, and share reports with your healthcare team.</p>
+            <h2>See GLP-1 Companion in action</h2>
+            <p>Explore the dashboard, log side effects, track nutrition, and share reports with your prescriber.</p>
           </div>
 
           <div className="preview-tabs">
@@ -1488,35 +1488,35 @@ export default function Landing() {
         <div className="section-header">
           <span className="section-label">How It Works</span>
           <h2>Simple tracking, powerful insights</h2>
-          <p>Get started in minutes and build a complete picture of your health over time.</p>
+          <p>Get started in minutes and build a complete picture of your GLP-1 journey over time.</p>
         </div>
         <div className="steps">
           <div className="step">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Add your medications</h3>
-              <p>Enter the medications you're currently taking, including dosages and schedules. We'll pull in known side effects automatically so you know what to watch for.</p>
+              <h3>Add your GLP-1 medication</h3>
+              <p>Enter your Ozempic, Wegovy, Mounjaro, or Zepbound details including current dose and titration schedule. We'll show you common side effects to watch for.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3>Log symptoms as they happen</h3>
-              <p>Quick-add symptoms with severity ratings. Takes just seconds. Add notes when you want to remember context. The more you log, the clearer the picture becomes.</p>
+              <h3>Log side effects and meals</h3>
+              <p>Quick-log nausea, fatigue, or other side effects with severity ratings. Track meals and protein intake to prevent muscle loss. Takes just seconds.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Track positive effects too</h3>
-              <p>Don't just track what's wrong—log improvements and positive changes. This helps you and your doctor understand what's actually working.</p>
+              <h3>Track your progress</h3>
+              <p>See how side effects change over time. Monitor positive changes like reduced appetite, more energy, and improved labs. Understand your body's response to GLP-1s.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">4</div>
             <div className="step-content">
-              <h3>Share with your care team</h3>
-              <p>Generate a summary report before your next appointment. Your doctor sees the full timeline—symptoms, medications, positive effects—in one clear view.</p>
+              <h3>Share with your prescriber</h3>
+              <p>Generate a progress report before your next appointment. Your provider sees dose history, side effects, nutrition, and progress in one clear view.</p>
             </div>
           </div>
         </div>
@@ -1526,8 +1526,8 @@ export default function Landing() {
       <section className="for-who" id="for-who">
         <div className="section-header">
           <span className="section-label">Who It's For</span>
-          <h2>Built for patients and providers</h2>
-          <p>Whether you're managing your own health or caring for others, Healthread helps you see the complete picture.</p>
+          <h2>Built for GLP-1 users and providers</h2>
+          <p>Whether you're starting your GLP-1 journey or prescribing these medications, GLP-1 Companion helps you see the complete picture.</p>
         </div>
         <div className="audience-cards">
           <div className="audience-card">
@@ -1536,14 +1536,14 @@ export default function Landing() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              Patients
+              GLP-1 Users
             </h3>
             <ul>
-              <li>Recovering from surgery or illness</li>
-              <li>Managing chronic conditions</li>
-              <li>Starting new medications</li>
-              <li>Tracking mental health treatments</li>
-              <li>Monitoring ongoing symptoms</li>
+              <li>Starting Ozempic, Wegovy, Mounjaro, or Zepbound</li>
+              <li>Titrating to a new dose level</li>
+              <li>Managing GLP-1 side effects</li>
+              <li>Tracking weight loss progress</li>
+              <li>Optimizing nutrition and protein intake</li>
             </ul>
           </div>
           <div className="audience-card">
@@ -1551,14 +1551,14 @@ export default function Landing() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
-              Healthcare Professionals
+              Prescribing Providers
             </h3>
             <ul>
+              <li>Endocrinologists</li>
+              <li>Obesity medicine specialists</li>
               <li>Primary care physicians</li>
-              <li>Specialists and surgeons</li>
-              <li>Mental health providers</li>
-              <li>Nurses and care coordinators</li>
-              <li>Physical therapists</li>
+              <li>Nurse practitioners</li>
+              <li>Telehealth weight management clinics</li>
             </ul>
           </div>
         </div>
@@ -1568,8 +1568,8 @@ export default function Landing() {
       <section className="waitlist" id="waitlist">
         <div className="waitlist-container">
           <span className="section-label">Early Access</span>
-          <h2>Be the first to try Healthread</h2>
-          <p>Join our waitlist to get early access when we launch. We're building this with real input from patients and providers.</p>
+          <h2>Be the first to try GLP-1 Companion</h2>
+          <p>Join our waitlist to get early access when we launch. We're building this with real input from GLP-1 users and prescribing providers.</p>
 
           <div className="waitlist-form">
             {!isSuccess ? (
@@ -1632,8 +1632,8 @@ export default function Landing() {
                             <circle cx="12" cy="7" r="4"/>
                           </svg>
                         </span>
-                        <span className="role-title">Patient</span>
-                        <span className="role-desc">Track my own health</span>
+                        <span className="role-title">GLP-1 User</span>
+                        <span className="role-desc">Track my GLP-1 journey</span>
                       </label>
                     </div>
                     <div className="role-option">
@@ -1654,8 +1654,8 @@ export default function Landing() {
                             <circle cx="20" cy="10" r="2"/>
                           </svg>
                         </span>
-                        <span className="role-title">Healthcare Pro</span>
-                        <span className="role-desc">View patient summaries</span>
+                        <span className="role-title">Prescribing Provider</span>
+                        <span className="role-desc">View patient progress</span>
                       </label>
                     </div>
                   </div>
@@ -1666,7 +1666,7 @@ export default function Landing() {
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </button>
-                <p className="form-note">We'll only email you about Healthread. No spam, ever.</p>
+                <p className="form-note">We'll only email you about GLP-1 Companion. No spam, ever.</p>
               </form>
             ) : (
               <div className="success-message">
@@ -1690,9 +1690,9 @@ export default function Landing() {
             <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2"/>
             <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          Healthread
+          GLP-1 Companion
         </a>
-        <p>&copy; 2026 Healthread. All rights reserved.</p>
+        <p>&copy; 2026 GLP-1 Companion. All rights reserved.</p>
       </footer>
     </div>
   );

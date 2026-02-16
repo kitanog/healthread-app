@@ -21,7 +21,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://healthread:healthread@db:5432/healthread
+      - DATABASE_URL=postgresql://glp1companion:glp1companion@db:5432/glp1companion
       - SECRET_KEY=dev-secret-key-change-in-production
       - ENVIRONMENT=development
     depends_on:
@@ -33,15 +33,15 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      - POSTGRES_USER=healthread
-      - POSTGRES_PASSWORD=healthread
-      - POSTGRES_DB=healthread
+      - POSTGRES_USER=glp1companion
+      - POSTGRES_PASSWORD=glp1companion
+      - POSTGRES_DB=glp1companion
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U healthread"]
+      test: ["CMD-SHELL", "pg_isready -U glp1companion"]
       interval: 5s
       timeout: 5s
       retries: 5

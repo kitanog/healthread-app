@@ -154,7 +154,7 @@ export default function LogEntry() {
       <div className="mb-6 sm:mb-8">
         <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Log Entry</h1>
         <p className="text-gray-600 mt-1 text-sm sm:text-base">
-          Track your symptoms or positive effects
+          Track your side effects or positive changes
         </p>
       </div>
 
@@ -239,8 +239,8 @@ export default function LogEntry() {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none transition-colors text-base"
                 placeholder={
                   entryType === 'symptom'
-                    ? 'e.g., Headache, Nausea, Fatigue'
-                    : 'e.g., Improved energy, Better sleep'
+                    ? 'e.g., Nausea, Fatigue, Constipation'
+                    : 'e.g., Reduced appetite, More energy, Better sleep'
                 }
                 required
               />
@@ -498,11 +498,11 @@ export default function LogEntry() {
               Logging Tips
             </h3>
             <ul className="text-xs text-primary-700 space-y-1.5">
-              <li>• Log as soon as you notice something</li>
-              <li>• Be specific about severity</li>
-              <li>• Link to medications for better tracking</li>
-              <li>• Use custom time if logging past events</li>
-              <li>• Don't forget positive effects too!</li>
+              <li>• Log GLP-1 side effects as they happen</li>
+              <li>• Track nausea timing relative to injections</li>
+              <li>• Note what helps reduce side effects</li>
+              <li>• Record positive changes like appetite reduction</li>
+              <li>• Link entries to your GLP-1 medication</li>
             </ul>
           </div>
         </div>

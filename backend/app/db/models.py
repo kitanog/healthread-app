@@ -1,5 +1,5 @@
 """
-Healthread Ontology Models
+GLP-1 Companion Ontology Models
 ==========================
 SQLAlchemy models representing the core ontology objects.
 """

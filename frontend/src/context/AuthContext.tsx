@@ -18,12 +18,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('healthread_token');
+    const token = localStorage.getItem('glp1companion_token');
     if (token) {
       authApi.getMe()
         .then(setUser)
         .catch(() => {
-          localStorage.removeItem('healthread_token');
+          localStorage.removeItem('glp1companion_token');
         })
         .finally(() => setIsLoading(false));
     } else {
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (data: LoginRequest) => {
     const response = await authApi.login(data);
-    localStorage.setItem('healthread_token', response.access_token);
+    localStorage.setItem('glp1companion_token', response.access_token);
     const userData = await authApi.getMe();
     setUser(userData);
   };
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('healthread_token');
+    localStorage.removeItem('glp1companion_token');
     setUser(null);
   };
 

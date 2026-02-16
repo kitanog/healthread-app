@@ -102,9 +102,9 @@ export default function FoodLogPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Food Tracking</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Nutrition Tracking</h1>
           <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Track meals, nutrition, and identify food sensitivities
+            Track meals, hit your protein goals, and identify food sensitivities
           </p>
         </div>
         <button

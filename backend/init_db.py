@@ -27,7 +27,7 @@ from app.db.seed import seed_database
 def init_database(reset=False):
     """Initialize the database."""
     print("=" * 50)
-    print("Healthread Database Initialization")
+    print("GLP-1 Companion Database Initialization")
     print("=" * 50)
 
     if reset:

@@ -9,7 +9,7 @@ import os
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://healthread:healthread@localhost:5432/healthread"
+    "postgresql://glp1companion:glp1companion@localhost:5432/glp1companion"
 )
 
 engine = create_engine(DATABASE_URL)

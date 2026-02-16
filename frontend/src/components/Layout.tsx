@@ -51,7 +51,7 @@ export default function Layout() {
               strokeLinecap="round"
             />
           </svg>
-          <span className="font-display text-xl">Healthread</span>
+          <span className="font-display text-xl">GLP-1 Companion</span>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -92,7 +92,7 @@ export default function Layout() {
                 strokeLinecap="round"
               />
             </svg>
-            <span className="font-display text-2xl">Healthread</span>
+            <span className="font-display text-2xl">GLP-1 Companion</span>
           </div>
         </div>
 

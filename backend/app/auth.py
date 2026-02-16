@@ -1,5 +1,5 @@
 """
-Authentication utilities for Healthread.
+Authentication utilities for GLP-1 Companion.
 Handles password hashing, JWT tokens, and user verification.
 """
 

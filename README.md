@@ -1,6 +1,6 @@
-# Healthread V1
+# GLP-1 Companion
 
-A health tracking application that helps patients track medications, symptoms, and positive effects, with intelligent side effect matching and shareable reports for healthcare providers.
+A GLP-1 medication companion app that helps patients on Ozempic, Wegovy, Mounjaro, and Zepbound track side effects, nutrition, and progress, with intelligent insights and shareable reports for prescribing providers.
 
 ## Architecture
 

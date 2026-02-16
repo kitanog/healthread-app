@@ -41,7 +41,7 @@ export default function Medications() {
         <div>
           <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Medications</h1>
           <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Manage your medications and track side effects
+            Manage your GLP-1 and other medications
           </p>
         </div>
         <button

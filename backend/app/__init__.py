@@ -1,1 +1,1 @@
-# Healthread Backend Application
+# GLP-1 Companion Backend Application

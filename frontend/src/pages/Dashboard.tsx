@@ -68,7 +68,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="mb-6 sm:mb-8">
         <h1 className="font-display text-2xl sm:text-3xl text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1 text-sm sm:text-base">Your health overview for the last 14 days</p>
+        <p className="text-gray-600 mt-1 text-sm sm:text-base">Your GLP-1 overview for the last 14 days</p>
       </div>
 
       {/* Stats Grid */}
@@ -128,7 +128,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Chart - 2 columns on desktop */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-soft p-4 sm:p-6">
-          <h2 className="font-semibold text-lg mb-4">Health Trends</h2>
+          <h2 className="font-semibold text-lg mb-4">GLP-1 Journey Trends</h2>
           <div className="h-56 sm:h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
