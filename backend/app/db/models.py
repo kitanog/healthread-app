@@ -1,5 +1,5 @@
 """
-Healthread Ontology Models
+IBS Diet Tracker Ontology Models
 ==========================
 SQLAlchemy models representing the core ontology objects.
 """

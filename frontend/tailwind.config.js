@@ -7,30 +7,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Healthread brand colors
+        // IBS Diet Tracker brand colors - warm terracotta/earth tones
         primary: {
-          50: '#f0f7f4',
-          100: '#d9ebe3',
-          200: '#b5d7c9',
-          300: '#88bda8',
-          400: '#5c9d84',
-          500: '#2D5A4A', // Main primary
-          600: '#2a5244',
-          700: '#254839',
-          800: '#1f3a2f',
-          900: '#1a2f26', // Sidebar
+          50: '#faf5f0',
+          100: '#f0e4d8',
+          200: '#e0c9b2',
+          300: '#cca888',
+          400: '#b5855e',
+          500: '#8B5E3C', // Main primary - warm brown
+          600: '#7a5235',
+          700: '#6a472e',
+          800: '#553926',
+          900: '#442e1f', // Sidebar
         },
         accent: {
-          50: '#fef9f0',
-          100: '#fef3e2',
-          200: '#fce5be',
-          300: '#f5d9a8',
-          400: '#E8B86D', // Main accent
-          500: '#d4a055',
-          600: '#b8863f',
-          700: '#996c33',
-          800: '#7a552a',
-          900: '#634523',
+          50: '#f0faf5',
+          100: '#dcf2e6',
+          200: '#b8e5cd',
+          300: '#8dd4ae',
+          400: '#5CB88A', // Main accent - fresh green
+          500: '#47a075',
+          600: '#388560',
+          700: '#2d6c4d',
+          800: '#24563e',
+          900: '#1c4532',
         },
         success: {
           50: '#ecfdf5',
@@ -86,8 +86,8 @@ export default {
         body: ['Plus Jakarta Sans', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        'soft': '0 4px 24px rgba(45, 90, 74, 0.08)',
-        'medium': '0 8px 40px rgba(45, 90, 74, 0.12)',
+        'soft': '0 4px 24px rgba(139, 94, 60, 0.08)',
+        'medium': '0 8px 40px rgba(139, 94, 60, 0.12)',
       },
       borderRadius: {
         'sm': '8px',

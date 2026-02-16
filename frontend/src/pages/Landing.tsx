@@ -56,31 +56,31 @@ export default function Landing() {
 
   const previewContent: Record<string, { title: string; description: string; features: string[]; url: string; iframeSrc: string }> = {
     dashboard: {
-      title: 'Your Health at a Glance',
-      description: 'The dashboard gives you an instant overview of your health journey. See trends in symptoms vs. positive effects, track your active medications, and get alerts when logged symptoms match known side effects.',
-      features: ['Side effect alerts', 'Trend visualization', 'Quick actions', 'Activity timeline'],
-      url: 'app.healthread.com/dashboard',
+      title: 'Your Elimination Diet at a Glance',
+      description: 'The dashboard gives you an instant overview of your elimination diet progress. See which foods trigger symptoms, track your current phase, and get alerts when food-symptom patterns are detected.',
+      features: ['Trigger food alerts', 'Phase tracking', 'Quick actions', 'Food diary timeline'],
+      url: 'app.ibsdiettracker.com/dashboard',
       iframeSrc: '/previews/01-dashboard-overview.html'
     },
     'log-entry': {
-      title: 'Log Symptoms & Effects Easily',
-      description: 'Quick entry forms let you log symptoms, positive effects, or medication doses in seconds. See known side effects for your medications right alongside your entry, and track patterns with similar past entries.',
-      features: ['Quick symptom tags', 'Severity scale', 'Medication linking', 'Known effects panel'],
-      url: 'app.healthread.com/log',
+      title: 'Log Meals & Symptoms Easily',
+      description: 'Quick entry forms let you log meals, symptoms, and bowel movements in seconds. See FODMAP ratings for foods right alongside your entry, and track patterns with similar past meals.',
+      features: ['Quick food tags', 'Symptom severity', 'FODMAP ratings', 'Meal-symptom linking'],
+      url: 'app.ibsdiettracker.com/log',
       iframeSrc: '/previews/02-log-entry.html'
     },
     'ai-insights': {
-      title: 'AI-Powered Health Insights',
-      description: 'Get personalized health summaries and recommendations based on your logged data. Ask questions about your health history, upload medical records for AI analysis, and receive actionable insights about your medications and symptoms.',
-      features: ['Weekly health summaries', 'Smart recommendations', 'Chat with your health data', 'Medical record analysis'],
-      url: 'app.healthread.com/ai-insights',
+      title: 'AI-Powered Diet Insights',
+      description: 'Get personalized elimination diet summaries and food reintroduction recommendations. Ask questions about your trigger patterns, get FODMAP guidance, and receive actionable insights about your diet and symptoms.',
+      features: ['Weekly diet summaries', 'Trigger food detection', 'FODMAP guidance', 'Reintroduction planning'],
+      url: 'app.ibsdiettracker.com/ai-insights',
       iframeSrc: '/previews/04-ai-insights.html'
     },
     'share-report': {
-      title: 'Share with Your Care Team',
-      description: 'Generate professional health summaries to share with doctors. Reports include medication history, symptom patterns, positive effects, and automatically detected correlations between your meds and symptoms.',
-      features: ['Secure sharing links', 'PDF export', 'Correlation detection', 'Customizable content'],
-      url: 'app.healthread.com/reports',
+      title: 'Share with Your GI Doctor',
+      description: 'Generate professional elimination diet reports for your gastroenterologist. Reports include food diary history, trigger patterns, safe foods list, and automatically detected correlations between foods and symptoms.',
+      features: ['Secure sharing links', 'PDF export', 'Trigger detection', 'Safe foods list'],
+      url: 'app.ibsdiettracker.com/reports',
       iframeSrc: '/previews/03-share-report.html'
     }
   };
@@ -93,19 +93,19 @@ export default function Landing() {
           --color-bg-warm: #F7F3EB;
           --color-text: #1A1A1A;
           --color-text-muted: #5C5C5C;
-          --color-primary: #2D5A4A;
-          --color-primary-light: #3D7A64;
-          --color-accent: #E8B86D;
-          --color-accent-light: #F5D9A8;
+          --color-primary: #8B5E3C;
+          --color-primary-light: #A07048;
+          --color-accent: #5CB88A;
+          --color-accent-light: #B8E5CD;
           --color-card: #FFFFFF;
           --color-border: #E5E0D5;
           --color-success: #059669;
           --color-success-soft: #D1FAE5;
           --font-display: 'DM Serif Display', Georgia, serif;
           --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
-          --shadow-soft: 0 4px 24px rgba(45, 90, 74, 0.08);
-          --shadow-medium: 0 8px 40px rgba(45, 90, 74, 0.12);
-          --shadow-large: 0 20px 60px rgba(45, 90, 74, 0.15);
+          --shadow-soft: 0 4px 24px rgba(139, 94, 60, 0.08);
+          --shadow-medium: 0 8px 40px rgba(139, 94, 60, 0.12);
+          --shadow-large: 0 20px 60px rgba(139, 94, 60, 0.15);
           --radius-sm: 8px;
           --radius-md: 16px;
           --radius-lg: 24px;
@@ -859,7 +859,7 @@ export default function Landing() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: radial-gradient(ellipse at 20% 50%, rgba(232, 184, 109, 0.15) 0%, transparent 50%),
+          background: radial-gradient(ellipse at 20% 50%, rgba(92, 184, 138, 0.15) 0%, transparent 50%),
                       radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
         }
 
@@ -998,7 +998,7 @@ export default function Landing() {
         .form-group select:focus {
           outline: none;
           border-color: var(--color-primary);
-          box-shadow: 0 0 0 3px rgba(45, 90, 74, 0.1);
+          box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
         }
 
         .form-group input::placeholder {
@@ -1040,7 +1040,7 @@ export default function Landing() {
 
         .role-option input:checked + label {
           border-color: var(--color-primary);
-          background: rgba(45, 90, 74, 0.05);
+          background: rgba(139, 94, 60, 0.05);
         }
 
         .role-option .role-icon {
@@ -1248,7 +1248,7 @@ export default function Landing() {
             <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2"/>
             <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          Healthread
+          IBS Diet Tracker
         </a>
         <ul className="nav-links">
           <li><button onClick={() => scrollToSection('features')}>Features</button></li>
@@ -1271,8 +1271,8 @@ export default function Landing() {
             <span className="hero-badge-dot"></span>
             Beta Available
           </span>
-          <h1>Your health journey, <em>threaded</em> together</h1>
-          <p>Track symptoms, medications, and vitals over time. Share meaningful summaries with your healthcare providers. Finally understand how treatments affect your wellbeing.</p>
+          <h1>Find your <em>trigger foods</em>, take back control</h1>
+          <p>Track meals, symptoms, and bowel movements through elimination and reintroduction phases. Share detailed diet reports with your gastroenterologist. Finally understand which foods trigger your IBS.</p>
           <div className="hero-cta">
             <button onClick={() => scrollToSection('waitlist')} className="btn-primary">
               Join the Waitlist
@@ -1290,21 +1290,21 @@ export default function Landing() {
               <div className="mockup-avatar">JD</div>
               <div className="mockup-user-info">
                 <h4>Jane Doe</h4>
-                <span>Recovery tracking · Week 3</span>
+                <span>Elimination phase · Week 3</span>
               </div>
             </div>
             <div className="mockup-stats">
               <div className="stat-card">
-                <span className="value">72</span>
-                <span className="label">Avg BPM</span>
+                <span className="value">5</span>
+                <span className="label">Triggers</span>
               </div>
               <div className="stat-card">
-                <span className="value">3</span>
-                <span className="label">Active Meds</span>
+                <span className="value">12</span>
+                <span className="label">Safe Foods</span>
               </div>
               <div className="stat-card">
-                <span className="value">↓ 40%</span>
-                <span className="label">Symptoms</span>
+                <span className="value">↓ 60%</span>
+                <span className="label">Flare-ups</span>
               </div>
             </div>
             <div className="mockup-chart">
@@ -1312,8 +1312,8 @@ export default function Landing() {
                 <svg viewBox="0 0 300 60" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#2D5A4A', stopOpacity: 0.3 }} />
-                      <stop offset="100%" style={{ stopColor: '#2D5A4A', stopOpacity: 0 }} />
+                      <stop offset="0%" style={{ stopColor: '#8B5E3C', stopOpacity: 0.3 }} />
+                      <stop offset="100%" style={{ stopColor: '#8B5E3C', stopOpacity: 0 }} />
                     </linearGradient>
                   </defs>
                   <path d="M0,45 Q30,50 60,40 T120,35 T180,25 T240,20 T300,15" />
@@ -1328,8 +1328,8 @@ export default function Landing() {
       <section className="features" id="features">
         <div className="section-header">
           <span className="section-label">Features</span>
-          <h2>Everything you need to understand your health</h2>
-          <p>A complete toolkit for tracking, analyzing, and communicating your health journey.</p>
+          <h2>Everything you need for your elimination diet</h2>
+          <p>A complete toolkit for tracking trigger foods, managing IBS symptoms, and communicating with your GI doctor.</p>
         </div>
         <div className="features-grid">
           <div className="feature-card">
@@ -1338,8 +1338,8 @@ export default function Landing() {
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
               </svg>
             </div>
-            <h3>Symptom Tracking</h3>
-            <p>Log symptoms with severity ratings, duration, and notes. Track patterns over time with intuitive visualizations.</p>
+            <h3>Food & Symptom Diary</h3>
+            <p>Log every meal alongside symptoms and bowel movements. Track patterns between what you eat and how you feel with intuitive visualizations.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1348,8 +1348,8 @@ export default function Landing() {
                 <path d="m8.5 8.5 7 7"/>
               </svg>
             </div>
-            <h3>Medication Management</h3>
-            <p>Track medications, dosages, and schedules. See known side effects and correlate them with your symptoms.</p>
+            <h3>Elimination Phases</h3>
+            <p>Follow structured elimination and reintroduction phases. Track which food groups you're testing and see clear pass/fail results.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1357,8 +1357,8 @@ export default function Landing() {
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
             </div>
-            <h3>Side Effect Matching</h3>
-            <p>Automatically match your symptoms to known medication side effects. Know if what you're experiencing is expected.</p>
+            <h3>Trigger Food Detection</h3>
+            <p>Automatically detect which foods correlate with your IBS symptoms. Get FODMAP ratings and know which foods to avoid.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1370,8 +1370,8 @@ export default function Landing() {
                 <polyline points="10 9 9 9 8 9"/>
               </svg>
             </div>
-            <h3>Doctor Summaries</h3>
-            <p>Generate comprehensive health reports to share with your healthcare providers. No more forgetting symptoms at appointments.</p>
+            <h3>GI Doctor Reports</h3>
+            <p>Generate comprehensive diet reports to share with your gastroenterologist. No more forgetting food triggers at appointments.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1381,8 +1381,8 @@ export default function Landing() {
                 <line x1="6" y1="20" x2="6" y2="14"/>
               </svg>
             </div>
-            <h3>Trend Analysis</h3>
-            <p>Visualize correlations between medications and symptoms. Understand what's working and what isn't.</p>
+            <h3>Food-Symptom Trends</h3>
+            <p>Visualize correlations between foods and IBS symptoms. Understand which foods are safe and which to avoid.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">
@@ -1402,8 +1402,8 @@ export default function Landing() {
         <div className="preview-container">
           <div className="section-header">
             <span className="section-label">Preview</span>
-            <h2>See Healthread in action</h2>
-            <p>Explore the dashboard, log entries, and share reports with your healthcare team.</p>
+            <h2>See IBS Diet Tracker in action</h2>
+            <p>Explore the dashboard, food diary, and share elimination diet reports with your GI doctor.</p>
           </div>
 
           <div className="preview-tabs">
@@ -1487,36 +1487,36 @@ export default function Landing() {
       <section className="how-it-works" id="how-it-works">
         <div className="section-header">
           <span className="section-label">How It Works</span>
-          <h2>Simple tracking, powerful insights</h2>
-          <p>Get started in minutes and build a complete picture of your health over time.</p>
+          <h2>Simple food logging, powerful trigger detection</h2>
+          <p>Get started in minutes and systematically identify your IBS trigger foods.</p>
         </div>
         <div className="steps">
           <div className="step">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Add your medications</h3>
-              <p>Enter the medications you're currently taking, including dosages and schedules. We'll pull in known side effects automatically so you know what to watch for.</p>
+              <h3>Start your elimination phase</h3>
+              <p>Begin by removing common IBS trigger food groups like high-FODMAP foods, dairy, and gluten. We'll guide you through a structured elimination protocol.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3>Log symptoms as they happen</h3>
-              <p>Quick-add symptoms with severity ratings. Takes just seconds. Add notes when you want to remember context. The more you log, the clearer the picture becomes.</p>
+              <h3>Log every meal and symptom</h3>
+              <p>Quick-log meals with ingredients and track GI symptoms as they happen. Takes just seconds. The more you log, the clearer your trigger patterns become.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Track positive effects too</h3>
-              <p>Don't just track what's wrong—log improvements and positive changes. This helps you and your doctor understand what's actually working.</p>
+              <h3>Reintroduce foods one by one</h3>
+              <p>Systematically reintroduce eliminated foods and monitor for reactions. Build a personalized safe foods list that works for your gut.</p>
             </div>
           </div>
           <div className="step">
             <div className="step-number">4</div>
             <div className="step-content">
-              <h3>Share with your care team</h3>
-              <p>Generate a summary report before your next appointment. Your doctor sees the full timeline—symptoms, medications, positive effects—in one clear view.</p>
+              <h3>Share with your GI doctor</h3>
+              <p>Generate a detailed elimination diet report before your next appointment. Your gastroenterologist sees the full timeline—trigger foods, symptoms, safe foods—in one clear view.</p>
             </div>
           </div>
         </div>
@@ -1526,8 +1526,8 @@ export default function Landing() {
       <section className="for-who" id="for-who">
         <div className="section-header">
           <span className="section-label">Who It's For</span>
-          <h2>Built for patients and providers</h2>
-          <p>Whether you're managing your own health or caring for others, Healthread helps you see the complete picture.</p>
+          <h2>Built for IBS patients and GI professionals</h2>
+          <p>Whether you're navigating an elimination diet or guiding patients through one, IBS Diet Tracker helps you see the complete picture.</p>
         </div>
         <div className="audience-cards">
           <div className="audience-card">
@@ -1536,14 +1536,14 @@ export default function Landing() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              Patients
+              IBS Patients
             </h3>
             <ul>
-              <li>Recovering from surgery or illness</li>
-              <li>Managing chronic conditions</li>
-              <li>Starting new medications</li>
-              <li>Tracking mental health treatments</li>
-              <li>Monitoring ongoing symptoms</li>
+              <li>Newly diagnosed with IBS</li>
+              <li>Starting an elimination diet</li>
+              <li>Following low-FODMAP protocol</li>
+              <li>Reintroducing trigger foods</li>
+              <li>Managing chronic IBS symptoms</li>
             </ul>
           </div>
           <div className="audience-card">
@@ -1551,14 +1551,14 @@ export default function Landing() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
-              Healthcare Professionals
+              GI Professionals
             </h3>
             <ul>
-              <li>Primary care physicians</li>
-              <li>Specialists and surgeons</li>
-              <li>Mental health providers</li>
-              <li>Nurses and care coordinators</li>
-              <li>Physical therapists</li>
+              <li>Gastroenterologists</li>
+              <li>Registered dietitians</li>
+              <li>GI nurse practitioners</li>
+              <li>Functional medicine doctors</li>
+              <li>Nutritional therapists</li>
             </ul>
           </div>
         </div>
@@ -1568,8 +1568,8 @@ export default function Landing() {
       <section className="waitlist" id="waitlist">
         <div className="waitlist-container">
           <span className="section-label">Early Access</span>
-          <h2>Be the first to try Healthread</h2>
-          <p>Join our waitlist to get early access when we launch. We're building this with real input from patients and providers.</p>
+          <h2>Be the first to try IBS Diet Tracker</h2>
+          <p>Join our waitlist to get early access when we launch. We're building this with real input from IBS patients and gastroenterologists.</p>
 
           <div className="waitlist-form">
             {!isSuccess ? (
@@ -1633,7 +1633,7 @@ export default function Landing() {
                           </svg>
                         </span>
                         <span className="role-title">Patient</span>
-                        <span className="role-desc">Track my own health</span>
+                        <span className="role-desc">Track my elimination diet</span>
                       </label>
                     </div>
                     <div className="role-option">
@@ -1654,8 +1654,8 @@ export default function Landing() {
                             <circle cx="20" cy="10" r="2"/>
                           </svg>
                         </span>
-                        <span className="role-title">Healthcare Pro</span>
-                        <span className="role-desc">View patient summaries</span>
+                        <span className="role-title">GI Professional</span>
+                        <span className="role-desc">View patient diet reports</span>
                       </label>
                     </div>
                   </div>
@@ -1666,7 +1666,7 @@ export default function Landing() {
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </button>
-                <p className="form-note">We'll only email you about Healthread. No spam, ever.</p>
+                <p className="form-note">We'll only email you about IBS Diet Tracker. No spam, ever.</p>
               </form>
             ) : (
               <div className="success-message">
@@ -1690,9 +1690,9 @@ export default function Landing() {
             <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2"/>
             <path d="M18 8v20M10 14c4 4 12 4 16 0M10 22c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          Healthread
+          IBS Diet Tracker
         </a>
-        <p>&copy; 2026 Healthread. All rights reserved.</p>
+        <p>&copy; 2026 IBS Diet Tracker. All rights reserved.</p>
       </footer>
     </div>
   );

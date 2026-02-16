@@ -1,6 +1,6 @@
-# Healthread V1
+# IBS Diet Tracker
 
-A health tracking application that helps patients track medications, symptoms, and positive effects, with intelligent side effect matching and shareable reports for healthcare providers.
+An elimination diet tool for IBS patients that helps track trigger foods, symptoms, and safe foods through structured elimination and reintroduction phases, with intelligent pattern detection and shareable reports for gastroenterologists.
 
 ## Architecture
 

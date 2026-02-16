@@ -1,7 +1,7 @@
 """
-Healthread Backend API
-======================
-Ontology-driven health tracking with Sources (read) and Actions (write) pattern.
+IBS Diet Tracker Backend API
+==============================
+IBS elimination diet tracking app API with Sources (read) and Actions (write) pattern.
 """
 
 from fastapi import FastAPI
@@ -39,8 +39,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Healthread API",
-    description="Ontology-driven health tracking API with provenance",
+    title="IBS Diet Tracker API",
+    description="IBS elimination diet tracking app API with provenance",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -64,7 +64,7 @@ app.include_router(actions.router, prefix="/api/actions", tags=["Actions (Write)
 @app.get("/")
 async def root():
     return {
-        "name": "Healthread API",
+        "name": "IBS Diet Tracker API",
         "version": "1.0.0",
         "ontology_version": "1.0",
         "endpoints": {

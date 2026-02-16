@@ -829,7 +829,7 @@ def seed_database():
         print(f"Seeded {len(COMMON_FOODS)} reference foods")
 
         # Seed test user
-        test_email = "test@healthread.app"
+        test_email = "test@ibsdiettracker.app"
         user_exists = db.query(User).filter(User.email == test_email).first()
         
         if not user_exists:

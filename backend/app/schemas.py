@@ -1,6 +1,6 @@
 """
 Pydantic schemas for API request/response validation.
-Maps to the Healthread ontology.
+Maps to the IBS Diet Tracker ontology.
 """
 
 from pydantic import BaseModel, EmailStr, Field

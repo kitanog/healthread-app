@@ -1,5 +1,5 @@
 """
-Authentication utilities for Healthread.
+Authentication utilities for IBS Diet Tracker.
 Handles password hashing, JWT tokens, and user verification.
 """
 

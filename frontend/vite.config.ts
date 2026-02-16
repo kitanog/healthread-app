@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     // ADD THIS SECTION:
     allowedHosts: [
-      'healthread-app-dev.up.railway.app', // Your specific domain
+      'ibs-diet-tracker-dev.up.railway.app', // Your specific domain
       '.railway.app'                      // Allows all railway subdomains
     ],
     proxy: {

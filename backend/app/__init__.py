@@ -1,1 +1,1 @@
-# Healthread Backend Application
+# IBS Diet Tracker Backend Application
