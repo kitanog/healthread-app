@@ -50,22 +50,47 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full ontology and desig
 
 ### Development Mode
 
-For live reload during development:
+The Docker images are production builds (no hot reload). For live reload
+during development, run the servers directly:
 
 ```bash
-# Terminal 1 - Backend
+# Terminal 1 - Database
+docker-compose up db
+
+# Terminal 2 - Backend (runs migrations, then starts with reload)
 cd backend
 pip install -r requirements.txt
+python prestart.py
 uvicorn app.main:app --reload --port 8000
 
-# Terminal 2 - Frontend
+# Terminal 3 - Frontend
 cd frontend
 npm install
 npm run dev
-
-# Terminal 3 - Database
-docker-compose up db
 ```
+
+## Database Migrations (Alembic)
+
+The schema is managed by Alembic — the app no longer creates tables at
+startup. `backend/prestart.py` runs automatically when the backend container
+starts: it waits for the database, applies pending migrations
+(`alembic upgrade head`), and seeds reference data. Databases that predate
+Alembic are detected and stamped with the baseline revision automatically,
+so existing deployments adopt migrations without data loss.
+
+When you change a model in `backend/app/db/models.py`:
+
+```bash
+cd backend
+# Generate a migration from the model diff (review it before committing!)
+DATABASE_URL=postgresql://... alembic revision --autogenerate -m "describe the change"
+
+# Apply it locally
+DATABASE_URL=postgresql://... alembic upgrade head
+```
+
+Commit the generated file in `backend/alembic/versions/` — it is applied to
+production automatically on the next deploy.
 
 ## API Structure
 
@@ -148,20 +173,27 @@ healthread-app/
 ## Environment Variables
 
 ### Backend
-- `DATABASE_URL` - PostgreSQL connection string
-- `SECRET_KEY` - JWT secret key (change in production!)
-- `ENVIRONMENT` - development/production
+- `DATABASE_URL` - PostgreSQL connection string (`postgres://` URLs are normalized automatically)
+- `SECRET_KEY` - JWT secret key (**required** when `ENVIRONMENT=production` — the app refuses to start with the dev default)
+- `ENVIRONMENT` - `development` (default) / `production`. Production disables `/docs` and demo-user seeding
+- `CORS_ORIGINS` - comma-separated allowed origins (e.g. `https://your-frontend.up.railway.app`)
+- `PORT` / `HOST` - bind address (Railway injects `PORT`; set `HOST=::` for Railway private networking)
+- `WEB_CONCURRENCY` - number of uvicorn workers (default 2)
+- `SEED_ON_STARTUP` - set to `false` to skip reference-data seeding at boot
 
 ### Frontend
-- `VITE_API_URL` - Backend API URL
+- `VITE_API_URL` - build-time API base URL (default `/api`, served same-origin through nginx)
+- `BACKEND_URL` - runtime nginx proxy target for `/api` (e.g. `http://backend:8000` in compose, or your backend's Railway URL)
+- `PORT` - port nginx listens on (Railway injects this)
 
 ## Cloud Deployment
 
 ### Option 1: Railway
-1. Push to GitHub
-2. Connect to Railway
-3. Add PostgreSQL service
-4. Deploy frontend and backend services
+1. Push to GitHub and connect both services (root: `backend/` and `frontend/`) to Railway; each has its own Dockerfile
+2. Add a PostgreSQL service and reference its `DATABASE_URL` from the backend
+3. Backend variables: `SECRET_KEY` (generate one: `openssl rand -hex 32`), `ENVIRONMENT=production`, `CORS_ORIGINS=<frontend public URL>`
+4. Frontend variables: `BACKEND_URL=<backend URL>` (use the private `http://backend.railway.internal:<port>` with backend `HOST=::`, or the backend's public https URL)
+5. Migrations and seeding run automatically on every backend deploy via `prestart.py`
 
 ### Option 2: Render
 1. Create PostgreSQL database

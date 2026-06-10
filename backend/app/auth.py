@@ -5,6 +5,7 @@ Handles password hashing, JWT tokens, and user verification.
 
 from datetime import datetime, timedelta
 from typing import Optional
+from uuid import UUID
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -17,9 +18,23 @@ from app.db.models import User
 
 
 # Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+_DEFAULT_DEV_KEY = "dev-secret-key-change-in-production"
+SECRET_KEY = os.getenv("SECRET_KEY", _DEFAULT_DEV_KEY)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 1 week
+
+if SECRET_KEY == _DEFAULT_DEV_KEY:
+    if os.getenv("ENVIRONMENT", "development") == "production":
+        raise RuntimeError(
+            "SECRET_KEY is not set. Refusing to start in production with the "
+            "default development key — set the SECRET_KEY environment variable."
+        )
+    import warnings
+    warnings.warn(
+        "Using the default development SECRET_KEY. Set SECRET_KEY before "
+        "deploying to production.",
+        stacklevel=1,
+    )
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -82,8 +97,13 @@ async def get_current_user(
     user_id: str = payload.get("sub")
     if user_id is None:
         raise credentials_exception
-    
-    user = db.query(User).filter(User.id == user_id).first()
+
+    try:
+        user_uuid = UUID(user_id)
+    except (ValueError, TypeError):
+        raise credentials_exception
+
+    user = db.query(User).filter(User.id == user_uuid).first()
     if user is None:
         raise credentials_exception
     

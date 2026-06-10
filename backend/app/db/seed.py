@@ -10,6 +10,7 @@ from app.db.models import (
     ReferencePositiveEffect, ReferenceFood, FrequencyCategory, User
 )
 from app.auth import get_password_hash
+import os
 import uuid
 
 
@@ -828,11 +829,16 @@ def seed_database():
 
         print(f"Seeded {len(COMMON_FOODS)} reference foods")
 
-        # Seed test user
+        # Seed demo user (development only — never create a user with a
+        # known password in production)
+        seed_demo = (
+            os.getenv("ENVIRONMENT", "development") != "production"
+            or os.getenv("SEED_DEMO_USER", "").lower() in ("1", "true", "yes")
+        )
         test_email = "test@healthread.app"
         user_exists = db.query(User).filter(User.email == test_email).first()
-        
-        if not user_exists:
+
+        if seed_demo and not user_exists:
             print("Seeding test user...")
             test_user = User(
                 email=test_email,
