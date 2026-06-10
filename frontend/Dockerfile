@@ -24,7 +24,10 @@ COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 ENV PORT=3000 \
-    BACKEND_URL=http://backend:8000
+    BACKEND_URL=http://backend:8000 \
+    # Required for 15-local-resolvers.envsh to export NGINX_LOCAL_RESOLVERS
+    # (used by the resolver directive in nginx.conf.template)
+    NGINX_ENTRYPOINT_LOCAL_RESOLVERS=on
 
 EXPOSE 3000
 
