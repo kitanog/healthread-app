@@ -50,9 +50,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthRequest = error.config?.url?.includes('/auth/login') ||
+      error.config?.url?.includes('/auth/register');
+    // Don't redirect on failed login/register attempts (let the form show
+    // the error) or when already on the login page (avoids a reload loop).
+    if (error.response?.status === 401 && !isAuthRequest) {
       localStorage.removeItem('healthread_token');
-      window.location.href = '/login';
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

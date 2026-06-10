@@ -2,58 +2,75 @@
 Healthread Backend API
 ======================
 Ontology-driven health tracking with Sources (read) and Actions (write) pattern.
+
+Schema management is handled by Alembic (see prestart.py / alembic/);
+the application no longer creates or mutates tables at startup.
 """
+
+import logging
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
-from app.db.database import engine, Base
-from app.db.seed import seed_database
+from app.db.database import engine
 from app.api import sources, actions, auth
-from sqlalchemy import inspect, text
 
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+logger = logging.getLogger("healthread")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Initialize database and seed data on startup."""
-    # Create tables
-    print("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
-
-    # Verify tables were created
-    inspector = inspect(engine)
-    tables = inspector.get_table_names()
-    print(f"Tables found: {len(tables)}")
-    for t in tables:
-        print(f"  - {t}")
-
-    # Seed reference data
-    try:
-        seed_database()
-    except Exception as e:
-        print(f"Error seeding database: {e}")
-        import traceback
-        traceback.print_exc()
-    yield
-
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 app = FastAPI(
     title="Healthread API",
     description="Ontology-driven health tracking API with provenance",
     version="1.0.0",
-    lifespan=lifespan
+    # Don't expose interactive API docs in production
+    docs_url="/docs" if ENVIRONMENT != "production" else None,
+    redoc_url="/redoc" if ENVIRONMENT != "production" else None,
+    openapi_url="/openapi.json" if ENVIRONMENT != "production" else None,
 )
 
-# CORS for frontend
-app.add_middleware(
-    CORSMiddleware,
-    # allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_origins=["*"],  # Allow all origins for simplicity; adjust in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+def _cors_origins() -> list[str]:
+    """
+    Comma-separated list of allowed origins, e.g.
+    CORS_ORIGINS=https://app.example.com,https://www.example.com
+    """
+    raw = os.getenv("CORS_ORIGINS", "")
+    return [o.strip() for o in raw.split(",") if o.strip()]
+
+
+cors_origins = _cors_origins()
+if cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # No explicit origins configured: allow any origin but without
+    # credentials (the API uses Bearer tokens, not cookies, so this is safe
+    # and keeps existing deployments working until CORS_ORIGINS is set).
+    if ENVIRONMENT == "production":
+        logger.warning(
+            "CORS_ORIGINS is not set; falling back to wildcard origins. "
+            "Set CORS_ORIGINS to your frontend URL(s) in production."
+        )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Mount API routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -71,56 +88,20 @@ async def root():
             "sources": "/api/sources - Read operations (Logical Sources)",
             "actions": "/api/actions - Write operations (Systems of Action)",
             "auth": "/api/auth - Authentication",
-            "docs": "/docs - OpenAPI documentation"
         }
     }
 
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy"}
-
-
-@app.get("/db-status")
-async def db_status():
-    """Check database status and list all tables."""
+    """Liveness/readiness probe: verifies the database is reachable."""
     try:
-        inspector = inspect(engine)
-        tables = inspector.get_table_names()
-
-        # Expected tables
-        expected = [
-            'users', 'medications', 'symptom_logs', 'positive_effects',
-            'food_logs', 'health_reports', 'ai_insights', 'provenance',
-            'reference_medications', 'side_effects', 'reference_symptoms',
-            'reference_positive_effects', 'reference_foods',
-            'symptom_medication_association', 'positive_effect_medication_association',
-            'food_medication_association', 'food_symptom_association'
-        ]
-
-        missing = [t for t in expected if t not in tables]
-        extra = [t for t in tables if t not in expected]
-
-        # Get row counts for key tables
-        counts = {}
         with engine.connect() as conn:
-            for table in ['users', 'reference_medications', 'reference_foods', 'medications', 'food_logs']:
-                if table in tables:
-                    result = conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
-                    counts[table] = result.scalar()
-
-        return {
-            "status": "connected",
-            "tables_found": len(tables),
-            "tables": sorted(tables),
-            "missing_tables": missing,
-            "extra_tables": extra,
-            "row_counts": counts,
-            "healthy": len(missing) == 0
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "error": str(e),
-            "healthy": False
-        }
+            conn.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception:
+        logger.exception("Health check failed: database unreachable")
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "database": "unreachable"},
+        )

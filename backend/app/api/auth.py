@@ -8,7 +8,7 @@ from datetime import timedelta
 
 from app.db.database import get_db
 from app.db.models import User
-from app.schemas import UserCreate, UserResponse, Token, LoginRequest
+from app.schemas import UserCreate, UserResponse, Token, LoginRequest, UserProfileUpdate
 from app.auth import (
     get_password_hash, 
     create_access_token, 
@@ -80,20 +80,17 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
 
 @router.put("/me", response_model=UserResponse)
 async def update_profile(
-    profile_data: dict,
+    profile_data: UserProfileUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Update current user profile.
     """
-    allowed_fields = ['name', 'date_of_birth', 'blood_type', 'height_cm', 'weight_kg', 'allergies']
-    
-    for field, value in profile_data.items():
-        if field in allowed_fields:
-            setattr(current_user, field, value)
-    
+    for field, value in profile_data.model_dump(exclude_unset=True).items():
+        setattr(current_user, field, value)
+
     db.commit()
     db.refresh(current_user)
-    
+
     return current_user

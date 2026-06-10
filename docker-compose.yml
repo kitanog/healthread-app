@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build:
@@ -8,11 +6,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8000/api
+      - PORT=3000
+      - BACKEND_URL=http://backend:8000
     depends_on:
       - backend
-    volumes:
-      - ./frontend/src:/app/src:ro
 
   backend:
     build:
@@ -24,11 +21,10 @@ services:
       - DATABASE_URL=postgresql://healthread:healthread@db:5432/healthread
       - SECRET_KEY=dev-secret-key-change-in-production
       - ENVIRONMENT=development
+      - CORS_ORIGINS=http://localhost:3000
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./backend/app:/app/app:ro
 
   db:
     image: postgres:16-alpine

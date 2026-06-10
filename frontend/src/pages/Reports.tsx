@@ -4,26 +4,20 @@ import { sourcesApi, actionsApi } from '../api/client';
 import {
   FileText,
   Plus,
-  Calendar,
   Share2,
-  Download,
-  Trash2,
   Link,
   CheckCircle,
-  Clock,
   Pill,
   Activity,
   Heart,
   AlertTriangle,
   Copy,
-  ExternalLink,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { format, parseISO, subDays } from 'date-fns';
 import type { HealthReport } from '../types';
 
 export default function Reports() {
-  const queryClient = useQueryClient();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedReport, setSelectedReport] = useState<HealthReport | null>(null);
 
@@ -437,7 +431,7 @@ function ReportDetailModal({
           )}
 
           {/* AI Insights */}
-          {report_data.ai_insights?.length > 0 && (
+          {(report_data.ai_insights?.length ?? 0) > 0 && (
             <div>
               <h3 className="font-semibold mb-3 flex items-center gap-2">
                 <span className="w-5 h-5 bg-ai-500 rounded flex items-center justify-center">
@@ -446,7 +440,7 @@ function ReportDetailModal({
                 AI Insights
               </h3>
               <div className="space-y-3">
-                {report_data.ai_insights.map((insight, i) => (
+                {report_data.ai_insights!.map((insight, i) => (
                   <div key={i} className="p-4 bg-ai-50 border border-ai-200 rounded-lg">
                     <p className="font-semibold text-ai-800">{insight.title}</p>
                     <p className="text-sm text-ai-700 mt-1">{insight.content}</p>

@@ -8,7 +8,6 @@ import {
   Calendar,
   AlertTriangle,
   X,
-  Check,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
@@ -16,7 +15,6 @@ import clsx from 'clsx';
 import { format, parseISO } from 'date-fns';
 
 export default function Medications() {
-  const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [expandedMed, setExpandedMed] = useState<string | null>(null);

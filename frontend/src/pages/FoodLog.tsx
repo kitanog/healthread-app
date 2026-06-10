@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sourcesApi, actionsApi } from '../api/client';
-import type { FoodLog, MealCategory, ReferenceFood, DailyNutritionSummary, FoodReactionSummary } from '../types';
+import type { FoodLog, MealCategory, ReferenceFood } from '../types';
 import {
   UtensilsCrossed,
   Plus,
-  Clock,
   Flame,
   AlertTriangle,
   X,
-  ChevronDown,
-  ChevronUp,
   Trash2,
   Apple,
   Coffee,
@@ -56,7 +53,6 @@ const DIET_TAG_LABELS: Record<string, string> = {
 };
 
 export default function FoodLogPage() {
-  const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | 'all'>('all');
   const [showNutrition, setShowNutrition] = useState(false);
@@ -507,12 +503,6 @@ function AddFoodModal({ onClose }: { onClose: () => void }) {
   const [hadReaction, setHadReaction] = useState(false);
   const [reactionSeverity, setReactionSeverity] = useState('');
   const [reactionNotes, setReactionNotes] = useState('');
-
-  const { data: suggestions = [] } = useQuery({
-    queryKey: ['foodSuggestions', name],
-    queryFn: () => sourcesApi.getFoodSuggestions(name),
-    enabled: name.length >= 2,
-  });
 
   const { data: referenceFoods = [] } = useQuery({
     queryKey: ['referenceFoods', name],

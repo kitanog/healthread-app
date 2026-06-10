@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Database initialization script.
-Run this to create/recreate all tables and seed data.
+Database initialization script (development utility).
+
+NOTE: Production schema management uses Alembic — see prestart.py and
+alembic/. Prefer `python prestart.py` so the database is tracked by
+migrations; this script bypasses Alembic (prestart.py will stamp the
+baseline revision afterwards if you use it).
 
 Usage:
   python init_db.py           # Create tables (won't drop existing)
